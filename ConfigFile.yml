@@ -1,0 +1,8 @@
+size:
+  num_min_seq: 100 #num min de sequencias por amostra
+trim:  
+  trim_forward: 13 #mudar valores para o corte da esquerda da forward seq
+  trim_reverse: 13 #mudar valores para o corte da esquerda da reverse seq
+trunc:  
+  trunc_forward: 150 #mudar valores para o corte da direita da forward seq
+  trunc_reverse: 150 #mudar valores para o corte da direita da reverse seq
