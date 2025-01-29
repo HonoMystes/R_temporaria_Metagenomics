@@ -16,7 +16,7 @@ echo ""
 
 #Variáveis
 data = $1 #nome do dirétório com as sequencias
-demux_file = demux_{$data}.qzv
+demux_file = trimmed-seqs_{$data}.qzv
 metadata = $2 #trocar pelo ficheiro metadata
 
 num_min_seq = $(cat ConfigFile.yml | yq '.size.num_min_seq')
