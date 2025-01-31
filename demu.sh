@@ -1,92 +1,82 @@
 #!/bin/bash
-#Este código é a primeira parte da análise metagenómica da minha tese usando o software qiime2
-#começando com a importação de amostras para .qza (artefacto) para correr no qiime2 e demultiplexing
-#os ficheiros de base vão ser do tipo .fastq.gz (no diretório dos dados) e tsv para a metadata.
-#O diretório com os dados tem que ter os ficheiros das sequencias: foward.fastq.gz, reverse.fastq.gz e barcode.fastq.gz
-#O nome dessa pasta e o nome do ficheiro metadata seram usados como argumentos
-#Criado por Daniela Deodato, Janeiro 2025
+#This code is the first part of the metagenomic analysis of my thesis, using the qiime2 software
+#starting with importing samples to .qza (artefact) to run in qiime2 and then cutting the primers with cutadapt
+#The base files will be .fastq.gz format (in the data directory) and tsv for the metadata.
+#The data directory must contain the sequence files: R1.fastq.gz (forward) and R2.fastq.gz (reverse)
+#The name of this directory and the name of the metadata file will be used as arguments in that order.
+#Copywrite Daniela Deodato, January 2025
 
 function help {
 echo ""
-echo "Este código é a primeira parte da análise metagenómica da minha tese usando o software qiime2"
-echo "começando com a importação de amostras para .qza (artefacto) para correr no qiime2 e demultiplexing"
-echo "os ficheiros de base vão ser do tipo .fastq.gz (no diretório dos dados) e tsv para a metadata."
-echo "O diretório com os dados tem que ter os ficheiros das sequencias: foward.fastq.gz, reverse.fastq.gz e barcode.fastq.gz"
-echo "O nome dessa pasta e o nome do ficheiro metadata seram usados como argumentos"
+echo "This code is the first part of the metagenomic analysis of my thesis, using the qiime2 software"
+echo "starting with importing samples to .qza (artefact) to run in qiime2 and then cutting the primers with cutadapt"
+echo "The base files will be .fastq.gz format (in the data directory) and tsv for the metadata."
+echo "The data directory must contain the sequence files: R1.fastq.gz (forward) and R2.fastq.gz (reverse)"
+echo "The name of this directory and the name of the metadata file will be used as arguments in that order"
 echo "Please make sure you have the qiime enviroment activated"
 echo ""
 }
 
-#Variáveis
-data=$1 #nome do diretório 
-data_directory='{$data}'/ #diretório 
-metadata=$2 #trocar pelo ficheiro metadata
-outputDir="output_demux_results"
+#Variables
+data=$1 #directory name
+data_directory='{$data}'/ #directory 
+metadata=$2 #switch to metadata file
+outputDir=$(cat ConfigFile.yml | yq '.directory_name.output_dir_cutadapt')
 
-#Possiveis erros
-#verificar se o número de argumentos está correto
+#Possible errors
+#check the number of arguments
 if [ $# -ne 2 ];
  then
   help
-  echo "ERRO: Número de argumentos errado" > Erro.1.txt
-  cat Erro.1.txt
-  echo "Este script requer dois argumentos para correr"
+  echo "ERROR: wrong number of arguments"
+  echo "This script requires 2 arguments to run"
   exit 1
  fi
 a pasta existe
 if [ ! -d "$data_directory" ];
  then
   help
-  echo "ERRO: A pasta $data_directory não existe" > Erro.2.txt
-  cat Erro.2.txt
-  echo "Por favor verifique se o nome da pasta está correto e se está na diretoria"
-  exit 1
- fi
-#verificar se o ficheiro metadata existe
-if [ ! -e "$metadata" ];
- then
-  help
-  echo "ERRO: O ficheiro $metadata não existe" > Erro.3.txt
-  cat Erro.3.txt
-  echo "Por favor verifique se o nome do ficheiro metadata está correto e se está na diretoria"
+  echo "ERROR: directory $data_directory not found" 
+  echo "Please check if the name is correct and the folder is in the current directory"
   exit 1
  fi
 
-#analysis
+#check if metadata file exists
+if [ ! -e "$metadata" ];
+ then
+  help
+  echo "ERROR: file $metadata not found"
+  echo "Please check if the name is correct and the file is in the current directory"
+  exit 1
+ fi
+
+#Importing data into artifact
 echo "Importing into artifact type"
 qiime tools import \
    --type EMPPairedEndSequences \
    --input-path $data_directory \
    --output-path {$data}.qza
 
-echo "Demultiplexing"
-qiime demux emp-paired \
-   --m-barcodes-file $metadata \
-   --m-barcodes-column BarcodeSequence \
-   --p-rev-comp-mapping-barcodes \ #se o barcode estiver na sequencia reverse complement
-   --i-seqs {$data}.qza \
-   --o-per-sample-sequences demux_{$data}.qza \
-   --o-error-correction-details demux_{$data}-details.qza
-
+#Cutting primers with cutadapt
 #cutadapt
+echo "Cutting primers with cutadapt"
 qiime cutadapt trim-paired \
-        --i-demultiplexed-sequences $demux_{$data}.qza \
+        --i-demultiplexed-sequences {$data}.qza \
         --p-front-f CCTACGG \
         --p-front-r GACTACHV \
-        --p-error-rate 0 \
-        --o-trimmed-sequences trimmed-seqs_{$data}.qza \
+        --p-error-rate 0 \filtrar amostras
         --verbose
 
-#sumariazar após o demultiplexing para vizualização
+#Summarize for vizualization
 echo "Summarizing demultiplexing"
 qiime demux summarize \
    --i-data trimmed-seqs_{$data}.qza \
    --o-visualization trimmed-seqs_{$data}.qzv
 
-#vizualização
+#Vizualization
 echo "Preparing visualization"
 qiime tools export \
   --input-path trimmed-seqs_{$data}.qzv \
-  --output-path ./demux_{$data}/
+  --output-path $outputDir
 
-echo "Check the trimmed-seqs_{$data}.qzv file to know what to do on the next step."
+echo "Check the "Interactive Quality Plot" tab in trimmed-seqs_{$data}.qzv file to know what to do on the next step."
