@@ -3,9 +3,9 @@ Scripts used for my thesis project on the metagenomic analysis of Rana temporari
 
 At the moment the current scripts and files are:
 
-- The *demu.sh* script for demultiplexing and cutadapt;  
-- The *FeatureTablecreation.sh* script to filter, denoise and create de feature tables to be used for the taxonomic, phylogenetic and diversity analysis. This script also filters out the chimeras in the data;
-- The *ConfigFile.yml* the configuration file to be used in the other scripts (at the moment only the FeatureTablecreation.sh is using this file);
+- The *demu.sh* script for importing the data into artifact type and cutting the primers with cutadapt.  
+- The *FeatureTablecreation.sh* script to filter, denoise, filter out chimeras and create de feature tables and representative sequences to be used for the taxonomic, phylogenetic and diversity analysis.
+- The *ConfigFile.yml* the configuration file to be used in the other scripts.
 - The License and the file you are currently reading the README file. 
 
 Copywrite Daniela Deodato year 2025.
