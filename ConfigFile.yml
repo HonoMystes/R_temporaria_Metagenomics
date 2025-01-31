@@ -1,8 +1,10 @@
 size:
-  num_min_seq: 100 #num min de sequencias por amostra
+  num_min_seq: 10 #minimum number of sequences per sample
 trim:  
-  trim_forward: 13 #mudar valores para o corte da esquerda da forward seq
-  trim_reverse: 13 #mudar valores para o corte da esquerda da reverse seq
+  trim_forward: 13 #change values for the left cut of the forward seq
+  trim_reverse: 13 #change values for the left cut of the reverse seq
 trunc:  
-  trunc_forward: 150 #mudar valores para o corte da direita da forward seq
-  trunc_reverse: 150 #mudar valores para o corte da direita da reverse seq
+  trunc_forward: 150 #change values for the right cut of the forward seq
+  trunc_reverse: 150 #change values for the right cut of the reverse seq
+directory_name:
+  output_dir_cutadapt: "./cutadapt_{$data}/" #name of the directory after cutting the primers
