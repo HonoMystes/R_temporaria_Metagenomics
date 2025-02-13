@@ -60,20 +60,22 @@ if [ ! -e "$metadata" ];
 qiime demux filter-samples \
   --i-demux $cutadapt_file_art \
   --m-metadata-file ./$outputDir/per-sample-fastq-counts.tsv \
-  --p-where 'CAST([forward sequence count] AS INT) > {$num_min_seq}' \  #alterara para número de sequencias que se quer
+  --p-where 'CAST([forward sequence count] AS INT) > {$num_min_seq}' \
   --o-filtered-demux $cutadapt_file_art
+#alterar para número de sequencias que se quer in p-where
 ###
 #denoising
 
 qiime dada2 denoise-paired \
-  --i-demultiplexed-seqs $cutadapt_file_art \ #alterar os seguintes parametros baseado nos nossos dados
-  --p-trim-left-f $trim_forward \ 
+  --i-demultiplexed-seqs $cutadapt_file_art \
+  --p-trim-left-f {$data}_uchime-dn-out/rep-seqs-nonchimeric-wo-borderline.qza$trim_forward \
   --p-trim-left-r $trim_reverse \
   --p-trunc-len-f $trunc_forward \
   --p-trunc-len-r $trunc_reverse \
   --o-table table_{$data}.qza \
   --o-representative-sequences rep-seqs_{$data}.qza \
   --o-denoising-stats denoising-stats_{$data}.qza
+#alterar os seguintes parametros baseado nos nossos dados no --i-demultiplexed-seqs
 ###
 #Feature tables
 qiime feature-table summarize \
