@@ -64,7 +64,7 @@ qiime cutadapt trim-paired \
         --i-demultiplexed-sequences {$data}.qza \
         --p-front-f CCTACGG \
         --p-front-r GACTACHV \
-        --p-error-rate 0 \filtrar amostras
+        --p-error-rate 0 \
         --verbose
 
 #Summarize for vizualization
