@@ -8,3 +8,7 @@ trunc:
   trunc_reverse: 150 #change values for the right cut of the reverse seq
 directory_name:
   output_dir_cutadapt: "./cutadapt_{$data}/" #name of the directory after cutting the primers
+taxonomy:
+  ref_taxa: "silva_ref_taxa.qza"
+  ref_seq: "silva_ref_seqs.qza"
+  classifier: "silva_16S_classifier.qza"
