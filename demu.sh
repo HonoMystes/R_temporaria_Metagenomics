@@ -40,7 +40,7 @@ if [ ! -d "$data_directory" ];
   echo "Please check if the name is correct and the folder is in the current directory"
   exit 1
  fi
-
+'''
 #check if metadata file exists
 if [ ! -e "$metadata" ];
  then
@@ -49,7 +49,7 @@ if [ ! -e "$metadata" ];
   echo "Please check if the name is correct and the file is in the current directory"
   exit 1
  fi
-
+'''
 #Importing data into artifact
 echo "Importing into artifact type"
 qiime tools import \
@@ -62,9 +62,10 @@ qiime tools import \
 echo "Cutting primers with cutadapt"
 qiime cutadapt trim-paired \
         --i-demultiplexed-sequences {$data}.qza \
-        --p-front-f CCTACGG \
-        --p-front-r GACTACHV \
+        --p-front-f CCTACGGGNGGCWGCAG \
+        --p-adapter-r GACTACHVGGGTATCTAATCC \
         --p-error-rate 0 \
+        --o-trimmed-sequences trimmed-seqs_{$data}.qza \
         --verbose
 
 #Summarize for vizualization
