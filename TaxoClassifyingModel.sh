@@ -3,12 +3,15 @@
 #This script creates a classifing model specific of the region 16S of the SILVA database in qiime2  
 
 #variables
+data=$1
+metadata=$(cat ConfigFile.yml | yq '.raw.metadata')
 classifier=$(cat ConfigFile.yml | yq '.taxonomy.classifier')
 ref_file_taxa=$(cat ConfigFile.yml | yq '.taxonomy.ref_taxa')
 ref_file_seq=$(cat ConfigFile.yml | yq '.taxonomy.ref_seq')
 ref_file_taxa_origin="origin_${ref_file_taxa}"
 ref_file_seq_origin="origin_${ref_file_seq}"
 freq_tbl=$(cat ConfigFile.yml | yq '.tables.freq_tbl')
+reqs_rep=$(cat ConfigFile.yml | yq '.tables.seqs_rep')
 
 #Get SILVA database
 qiime rescript get-silva-data \
@@ -80,12 +83,24 @@ qiime feature-classifier classify-sklearn \
 qiime metadata tabulate \
   --m-input-file taxonomy.qza \
   --o-visualization taxonomy.qzv
-#barplot to observe taxonomy
+
+#apply classifier to our data
+qiime feature-classifier classify-sklearn \
+  --i-classifier $classifier \
+  --i-reads $reqs_rep \
+  --o-classification {$data}_taxonomy.qza
+
+qiime metadata tabulate \
+  --m-input-file {$data}_taxonomy.qza \
+  --o-visualization {$data}_taxonomy.qzv
+
+#barplot to observe taxonomy in our data
 qiime taxa barplot \
   --i-table $freq_tbl \
-  --i-taxonomy taxonomy.qza \
-  --m-metadata-file sample-metadata.tsv \
-  --o-visualization taxa-bar-plots.qzv
+  --i-taxonomy {$data}_taxonomy.qza \
+  --m-metadata-file $metadata \
+  --o-visualization {$data}_taxa_bar_plots.qzv
 
-echo "check the "taxonomy.qzv" file in qiime2 to see the confidance of the classifier and the taxa-bar-plots.qzv to see the taxonomy composition"
+echo "Check the "{$data}_taxonomy.qzv" file in qiime2 to see the confidance of the classifier of the reference file with the data"
+echo "The {$data}_taxa_bar_plots.qzv shows the taxonomic composition"
 echo "The classifying model is $classifier"
