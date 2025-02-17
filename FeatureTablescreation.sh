@@ -24,6 +24,10 @@ trim_reverse=$(cat ConfigFile.yml | yq '.trim.trim_reverse')
 trunc_forward=$(cat ConfigFile.yml | yq '.trunc.trunc_forward')
 trunc_reverse=$(cat ConfigFile.yml | yq '.trunc.trunc_reverse')
 outputDir=$(cat ConfigFile.yml | yq '.directory_name.output_dir_cutadapt')
+freq_tbl=$(cat ConfigFile.yml | yq '.tables.freq_tbl')
+freq_tbl_viz=$(cat ConfigFile.yml | yq '.tables.freq_tbl_viz')
+seqs_rep=$(cat ConfigFile.yml | yq '.tables.seqs_rep')
+seqs_rep_viz=$(cat ConfigFile.yml | yq '.tables.seqs_rep_viz')
 
 #Possible errors
 #check the number of arguments
@@ -72,20 +76,20 @@ qiime dada2 denoise-paired \
   --p-trim-left-r $trim_reverse \
   --p-trunc-len-f $trunc_forward \
   --p-trunc-len-r $trunc_reverse \
-  --o-table table_{$data}.qza \
-  --o-representative-sequences rep-seqs_{$data}.qza \
+  --o-table $freq_tbl \
+  --o-representative-sequences $seqs_rep \
   --o-denoising-stats denoising-stats_{$data}.qza
 #alterar os seguintes parametros baseado nos nossos dados no --i-demultiplexed-seqs
 ###
 #Feature tables
 qiime feature-table summarize \
-  --i-table table_{$data}.qza \
-  --o-visualization table_{$data}.qzv \
+  --i-table $freq_tbl \
+  --o-visualization $freq_tbl_viz \
   --m-sample-metadata-file $metadata
 
 qiime feature-table tabulate-seqs \
-  --i-data rep-seqs_{$data}.qza \
-  --o-visualization rep-seqs_{$data}.qzv
+  --i-data $seqs_rep \
+  --o-visualization $seqs_rep_viz
 
 qiime metadata tabulate \
   --m-input-file denoising-stats_{$data}.qza \
@@ -96,8 +100,8 @@ qiime metadata tabulate \
 echo "Examining for chimeras"
 echo "Running de novo" 
 qiime vsearch uchime-denovo \
-  --i-table table_{$data}.qza \
-  --i-sequences rep-seqs_{$data}.qza \
+  --i-table $freq_tbl \
+  --i-sequences $seqs_rep \
   --output-dir {$data}_uchime-dn-out
 
 qiime metadata tabulate \
@@ -105,9 +109,9 @@ qiime metadata tabulate \
   --o-visualization {$data}_uchime-dn-out/stats.qzv
 
 qiime feature-table filter-features \
-  --i-table table_{$data}.qza \
+  --i-table $freq_tbl \
   --m-metadata-file {$data}_uchime-dn-out/nonchimeras.qza \
-  --o-filtered-table {$data}_uchime-dn-out/table-nonchimeric-wo-borderline.qza
+  --o-filtered-table {$data}_uchime-dn-out/$freq_tbl
 
 qiime feature-table filter-seqs \
   --i-data rep-seqs_{$data}.qza \
@@ -115,7 +119,7 @@ qiime feature-table filter-seqs \
   --o-filtered-data {$data}_uchime-dn-out/rep-seqs-nonchimeric-wo-borderline.qza
 
 qiime feature-table summarize \
-  --i-table {$data}_uchime-dn-out/table-nonchimeric-wo-borderline.qza \
-  --o-visualization {$data}_uchime-dn-out/table-nonchimeric-wo-borderline.qzv
+  --i-table {$data}_uchime-dn-out/$freq_tbl \
+  --o-visualization {$data}_uchime-dn-out/$freq_tbl_viz
 
-echo "check {$data}_uchime-dn-out/table-nonchimeric-wo-borderline.qzv to know what to do on script phyloDiv.sh"
+echo "check {$data}_uchime-dn-out/{$freq_tbl_viz} to know what to do on script phyloDiv.sh"
