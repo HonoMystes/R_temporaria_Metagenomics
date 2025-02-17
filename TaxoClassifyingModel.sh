@@ -8,6 +8,7 @@ ref_file_taxa=$(cat ConfigFile.yml | yq '.taxonomy.ref_taxa')
 ref_file_seq=$(cat ConfigFile.yml | yq '.taxonomy.ref_seq')
 ref_file_taxa_origin="origin_${ref_file_taxa}"
 ref_file_seq_origin="origin_${ref_file_seq}"
+freq_tbl=$(cat ConfigFile.yml | yq '.tables.freq_tbl')
 
 #Get SILVA database
 qiime rescript get-silva-data \
@@ -79,5 +80,12 @@ qiime feature-classifier classify-sklearn \
 qiime metadata tabulate \
   --m-input-file taxonomy.qza \
   --o-visualization taxonomy.qzv
+#barplot to observe taxonomy
+qiime taxa barplot \
+  --i-table $freq_tbl \
+  --i-taxonomy taxonomy.qza \
+  --m-metadata-file sample-metadata.tsv \
+  --o-visualization taxa-bar-plots.qzv
 
-echo "check the "taxonomy.qzv" file in qiime2 to see the confidance of the classifier"
+echo "check the "taxonomy.qzv" file in qiime2 to see the confidance of the classifier and the taxa-bar-plots.qzv to see the taxonomy composition"
+echo "The classifying model is $classifier"
