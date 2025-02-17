@@ -1,3 +1,6 @@
+raw:
+  data_directory: 
+  metadata: 
 size:
   num_min_seq: 10 #minimum number of sequences per sample
 trim:  
