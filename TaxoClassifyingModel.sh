@@ -11,8 +11,10 @@ ref_file_seq=$(cat ConfigFile.yml | yq '.taxonomy.ref_seq')
 ref_file_taxa_origin="origin_${ref_file_taxa}"
 ref_file_seq_origin="origin_${ref_file_seq}"
 freq_tbl=$(cat ConfigFile.yml | yq '.tables.freq_tbl')
-reqs_rep=$(cat ConfigFile.yml | yq '.tables.seqs_rep')
-
+seqs_rep=$(cat ConfigFile.yml | yq '.tables.seqs_rep')
+prim_f= $(cat ConfigFile.yml | yq '.illumina.primer_f')
+prim_r= $(cat ConfigFile.yml | yq '.illumina.primer_r')
+taxo= $(cat ConfigFile.yml | yq '.taxonomy.taxo_data')
 #Get SILVA database
 qiime rescript get-silva-data \
     --p-version '138.2' \
@@ -53,8 +55,8 @@ qiime rescript dereplicate \
 #extract sequences
 qiime feature-classifier extract-reads \
     --i-sequences "derep_uniq_$ref_file_seq_origin" \
-    --p-f-primer GTGYCAGCMGCCGCGGTAA \
-    --p-r-primer GGACTACNVGGGTWTCTAAT \
+    --p-f-primer $prim_f \
+    --p-r-primer $prim_r \
     --p-n-jobs 2 \
     --p-read-orientation 'forward' \
     --o-reads "derep_uniq_$ref_file_seq"
@@ -68,7 +70,7 @@ qiime rescript dereplicate \
     --o-dereplicated-sequences $ref_file_seq \
     --o-dereplicated-taxa  $ref_file_taxa
 
-#train classifier
+#train feature classifier
 qiime feature-classifier fit-classifier-naive-bayes \
     --i-reference-reads $ref_file_seq \
     --i-reference-taxonomy $ref_file_taxa \
@@ -87,20 +89,25 @@ qiime metadata tabulate \
 #apply classifier to our data
 qiime feature-classifier classify-sklearn \
   --i-classifier $classifier \
-  --i-reads $reqs_rep \
-  --o-classification {$data}_taxonomy.qza
+  --i-reads $seqs_rep \
+  --o-classification $taxo
+
 
 qiime metadata tabulate \
-  --m-input-file {$data}_taxonomy.qza \
+  --m-input-file $taxo \
   --o-visualization {$data}_taxonomy.qzv
 
 #barplot to observe taxonomy in our data
 qiime taxa barplot \
   --i-table $freq_tbl \
-  --i-taxonomy {$data}_taxonomy.qza \
+  --i-taxonomy $taxo \
   --m-metadata-file $metadata \
   --o-visualization {$data}_taxa_bar_plots.qzv
+
 
 echo "Check the "{$data}_taxonomy.qzv" file in qiime2 to see the confidance of the classifier of the reference file with the data"
 echo "The {$data}_taxa_bar_plots.qzv shows the taxonomic composition"
 echo "The classifying model is $classifier"
+
+#train the sample classifier for the prevision model
+#backburner por enquanto
