@@ -1,0 +1,101 @@
+#!/bin/bash
+#This is the forth part of the metagenomic analysis of my thesis, using qiime2
+#
+
+#variables
+metadata=$(cat ConfigFile.yml | yq '.raw.metadata')
+seqs_rep=$(cat ConfigFile.yml | yq '.tables.seqs_rep')
+freq_tbl=$(cat ConfigFile.yml | yq '.tables.freq_tbl')
+classifier=$(cat ConfigFile.yml | yq '.taxonomy.classifier')
+taxo= $(cat ConfigFile.yml | yq '.taxonomy.taxo_data')
+samp_depth= $(cat ConfigFile.yml | yq '.diversity.sampling_depth')
+seed= $(cat ConfigFile.yml | yq '.phylogeny.seed')
+rapid_boot= $(cat ConfigFile.yml | yq '.phylogeny.rapid_boot_seed')
+boot_rep= $(cat ConfigFile.yml | yq '.phylogeny.boot_rep')
+
+#filter representative sequencies table with the taxonomy artifact
+qiime taxa filter-table \
+  --i-table $seqs_rep \
+  --i-taxonomy $taxo \
+  --p-mode contains \
+  --p-include p__ \
+  --o-filtered-table $seqs_rep
+
+#align sequences
+qiime alignment mafft \
+  --i-sequences $seqs_rep \
+  --o-alignment aligned_rep_seqs.qza
+
+#phylogeny using raxml
+qiime phylogeny raxml-rapid-bootstrap \
+  --i-alignment aligned_rep_seqs.qza \
+  --p-seed $seed \
+  --p-rapid-bootstrap-seed $rapid_boot \
+  --p-bootstrap-replicates $boot_rep \
+  --p-substitution-model GTRCAT \
+  --o-tree raxml_cat_bootstrap_tree.qza \
+  --verbose
+#rooting the tree to use the uniFrac diversity methods
+qiime phylogeny midpoint-root \
+  --i-tree raxml_cat_bootstrap_tree.qza \
+  --o-rooted-tree rooted_tree.qza
+
+#diversity analysis
+qiime diversity core-metrics-phylogenetic \
+  --i-phylogeny rooted_tree.qza \
+  --i-table $freq_tbl \
+  --p-sampling-depth $samp_depth \
+  --m-metadata-file $metadata \
+  --output-dir diversity_core_metrics
+
+#alpha diversity see parkinson's mouse
+qiime diversity alpha-group-significance \
+  --i-alpha-diversity ./diversity_core_metrics/faith_pd_vector.qza \
+  --m-metadata-file $metadata \
+  --o-visualization ./_diversity_core_metrics/faiths_pd_statistics.qzv
+qiime diversity alpha-group-significance \
+ --i-alpha-diversity ./diversity_core_metrics/evenness_vector.qza \
+ --m-metadata-file $metadata \
+ --o-visualization ./diversity_core_metrics/evenness_statistics.qzv
+#rarefraction
+qiime diversity alpha-rarefaction \
+  --i-table $freq_tbl \
+  --m-metadata-file $metadata \
+  --o-visualization ./alpha_rarefaction_curves.qzv \
+  --p-min-depth 10 \
+  --p-max-depth 4250 #check freq_file 
+
+#analysis of variance (ANOVA) to test whether multiple effects significantly impact alpha diversity
+qiime longitudinal anova \
+  --m-metadata-file ./diversity_core_metrics/faith_pd_vector.qza \
+  --m-metadata-file $metadata \
+  --p-formula 'faith_pd ~ temperature * diet' \
+  --o-visualization ./core-metrics-results/faiths_pd_anova.qzv
+
+#beta diversity
+qiime diversity beta-group-significance \
+  --i-distance-matrix diversity_core_metrics/unweighted_unifrac_distance_matrix.qza \
+  --m-metadata-file $metadata \
+  --m-metadata-column temperature \
+  --o-visualization diversity_core_metrics/unweighted_unifrac_temp_significance.qzv
+
+qiime diversity beta-group-significance \
+  --i-distance-matrix diversity_core_metrics/weighted_unifrac_distance_matrix.qza \
+  --m-metadata-file $metadata \
+  --m-metadata-column temperature \
+  --o-visualization diversity_core_metrics/weighted-unifrac_temp_significance.qzv
+
+qiime diversity beta-group-significance \
+  --i-distance-matrix diversity_core_metrics/unweighted_unifrac_distance_matrix.qza \
+  --m-metadata-file $metadata \
+  --m-metadata-column diet \
+  --o-visualization diversity_core_metrics/unweighted_unifrac_diet_significance.qzv
+
+qiime diversity beta-group-significance \
+  --i-distance-matrix diversity_core_metrics/weighted_unifrac_distance_matrix.qza \
+  --m-metadata-file $metadata \
+  --m-metadata-column diet \
+  --o-visualization diversity_core_metrics/weighted_unifrac_diet_significance.qzv
+
+#use permadisposition?
+#use adonis?
