@@ -72,7 +72,7 @@ qiime demux filter-samples \
 
 qiime dada2 denoise-paired \
   --i-demultiplexed-seqs $cutadapt_file_art \
-  --p-trim-left-f {$data}_uchime-dn-out/rep-seqs-nonchimeric-wo-borderline.qza$trim_forward \
+  --p-trim-left-f $trim_forward \
   --p-trim-left-r $trim_reverse \
   --p-trunc-len-f $trunc_forward \
   --p-trunc-len-r $trunc_reverse \
@@ -111,15 +111,15 @@ qiime metadata tabulate \
 qiime feature-table filter-features \
   --i-table $freq_tbl \
   --m-metadata-file {$data}_uchime-dn-out/nonchimeras.qza \
-  --o-filtered-table {$data}_uchime-dn-out/$freq_tbl
+  --o-filtered-table $freq_tbl
 
 qiime feature-table filter-seqs \
-  --i-data rep-seqs_{$data}.qza \
+  --i-data $seqs_rep \
   --m-metadata-file {$data}_uchime-dn-out/nonchimeras.qza \
-  --o-filtered-data {$data}_uchime-dn-out/rep-seqs-nonchimeric-wo-borderline.qza
+  --o-filtered-data $seqs_rep
 
 qiime feature-table summarize \
-  --i-table {$data}_uchime-dn-out/$freq_tbl \
-  --o-visualization {$data}_uchime-dn-out/$freq_tbl_viz
+  --i-table $freq_tbl \
+  --o-visualization $freq_tbl_viz
 
-echo "check {$data}_uchime-dn-out/{$freq_tbl_viz} to know what to do on script phyloDiv.sh"
+echo "check $freq_tbl_viz to know what to do on script phyloDiv.sh"
