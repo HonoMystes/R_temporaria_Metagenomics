@@ -1,5 +1,5 @@
 raw:
-  data_directory: 
+  data_directory: " /scratch/FPM/frogs_metagenomics/01-raw_data/Rana_temporaria"
   metadata: 
 size:
   num_min_seq: 10 #minimum number of sequences per sample
@@ -14,9 +14,19 @@ directory_name:
 tables:
   freq_tbl: "{$data}_freq_table.qza"
   freq_tbl_viz: "{$data}_freq_table.qzv"
-  seqs_rep: "{$data}_seqs_table.qza"
-  seqs_rep_viz: "{$data}_seqs_table.qzv"
+  seqs_rep: "{$data}_rep_seqs.qza"
+  seqs_rep_viz: "{$data}_rep_seqs.qzv"
 taxonomy:
   ref_taxa: "silva_ref_taxa.qza"
   ref_seq: "silva_ref_seqs.qza"
   classifier: "silva_16S_classifier.qza"
+  taxo_data: "{$data}_taxonomy.qza"
+illumina:
+  primer_f: "CCTACGGGNGGCWGCAG"
+  primer_r: "GACTACHVGGGTATCTAATCC"
+phylogeny:
+  seed: 1723
+  rapid_boot_seed: 9384
+  boot_rep: 100
+diversity:
+  samplig_depth: 1103 #chose based on what we see in the freq_table to retain the min of frequency and to keep the max number of seqs per sample 
