@@ -20,8 +20,10 @@ echo ""
 #Variables
 data=$1 #directory name
 data_directory='{$data}'/ #directory 
-metadata=$2 #switch to metadata file
+metadata=$(cat ConfigFile.yml | yq '.raw.metadata')
 outputDir=$(cat ConfigFile.yml | yq '.directory_name.output_dir_cutadapt')
+prim_f= $(cat ConfigFile.yml | yq '.illumina.primer_f')
+prim_r= $(cat ConfigFile.yml | yq '.illumina.primer_r')
 
 #Possible errors
 #check the number of arguments
@@ -62,8 +64,8 @@ qiime tools import \
 echo "Cutting primers with cutadapt"
 qiime cutadapt trim-paired \
         --i-demultiplexed-sequences {$data}.qza \
-        --p-front-f CCTACGGGNGGCWGCAG \
-        --p-adapter-r GACTACHVGGGTATCTAATCC \
+        --p-adapter-f $prim_f \
+        --p-adapter-r $prim_r \
         --p-error-rate 0 \
         --o-trimmed-sequences trimmed-seqs_{$data}.qza \
         --verbose
