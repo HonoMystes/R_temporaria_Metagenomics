@@ -49,6 +49,15 @@ qiime diversity core-metrics-phylogenetic \
   --output-dir diversity_core_metrics
 
 #alpha diversity see parkinson's mouse
+
+#rarefraction
+qiime diversity alpha-rarefaction \
+  --i-table $freq_tbl \
+  --m-metadata-file $metadata \
+  --o-visualization ./alpha_rarefaction_curves.qzv \
+  --p-min-depth 10 \
+  --p-max-depth 4250 #check freq_file 
+
 qiime diversity alpha-group-significance \
   --i-alpha-diversity ./diversity_core_metrics/faith_pd_vector.qza \
   --m-metadata-file $metadata \
@@ -57,13 +66,6 @@ qiime diversity alpha-group-significance \
  --i-alpha-diversity ./diversity_core_metrics/evenness_vector.qza \
  --m-metadata-file $metadata \
  --o-visualization ./diversity_core_metrics/evenness_statistics.qzv
-#rarefraction
-qiime diversity alpha-rarefaction \
-  --i-table $freq_tbl \
-  --m-metadata-file $metadata \
-  --o-visualization ./alpha_rarefaction_curves.qzv \
-  --p-min-depth 10 \
-  --p-max-depth 4250 #check freq_file 
 
 #analysis of variance (ANOVA) to test whether multiple effects significantly impact alpha diversity
 qiime longitudinal anova \
@@ -97,5 +99,14 @@ qiime diversity beta-group-significance \
   --m-metadata-column diet \
   --o-visualization diversity_core_metrics/weighted_unifrac_diet_significance.qzv
 
-#use permadisposition?
-#use adonis?
+#emperor plots
+qiime emperor plot \
+  --i-pcoa diversity_core_metrics/unweighted_unifrac_pcoa_results.qza \
+  --m-metadata-file $metadata \
+  --p-custom-axes lat \
+  --o-visualization unifrac_emperor_lat.qzv
+qiime emperor plot \
+  --i-pcoa diversity_core_metrics/bray_curtis_pcoa_results.qza \
+  --m-metadata-file $metadata \
+  --p-custom-axes lat \
+  --o-visualization bray_curtis_emperor_lat.qzv
