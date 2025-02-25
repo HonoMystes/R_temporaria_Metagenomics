@@ -12,9 +12,9 @@ ref_file_taxa_origin="origin_${ref_file_taxa}"
 ref_file_seq_origin="origin_${ref_file_seq}"
 freq_tbl=$(cat ConfigFile.yml | yq '.tables.freq_tbl')
 seqs_rep=$(cat ConfigFile.yml | yq '.tables.seqs_rep')
-prim_f= $(cat ConfigFile.yml | yq '.illumina.primer_f')
-prim_r= $(cat ConfigFile.yml | yq '.illumina.primer_r')
-taxo= $(cat ConfigFile.yml | yq '.taxonomy.taxo_data')
+prim_f=$(cat ConfigFile.yml | yq '.illumina.primer_f')
+prim_r=$(cat ConfigFile.yml | yq '.illumina.primer_r')
+taxo=$(cat ConfigFile.yml | yq '.taxonomy.taxo_data')
 #Get SILVA database
 qiime rescript get-silva-data \
     --p-version '138.2' \
