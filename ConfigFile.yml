@@ -1,5 +1,5 @@
 raw:
-  data_directory: " /scratch/FPM/frogs_metagenomics/01-raw_data/Rana_temporaria"
+  data_directory: "/scratch/FPM/frogs_metagenomics/01-raw_data/Rana_temporaria"
   metadata: 
 size:
   num_min_seq: 10 #minimum number of sequences per sample
@@ -30,3 +30,4 @@ phylogeny:
   boot_rep: 100
 diversity:
   samplig_depth: 1103 #chose based on what we see in the freq_table to retain the min of frequency and to keep the max number of seqs per sample 
+  raref_cap: 2000 #see where in the alpha rarefraction it stabilizes
