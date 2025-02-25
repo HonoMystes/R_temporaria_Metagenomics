@@ -22,8 +22,8 @@ data=$1 #directory name
 data_directory='{$data}'/ #directory 
 metadata=$(cat ConfigFile.yml | yq '.raw.metadata')
 outputDir=$(cat ConfigFile.yml | yq '.directory_name.output_dir_cutadapt')
-prim_f= $(cat ConfigFile.yml | yq '.illumina.primer_f')
-prim_r= $(cat ConfigFile.yml | yq '.illumina.primer_r')
+prim_f=$(cat ConfigFile.yml | yq '.illumina.primer_f')
+prim_r=$(cat ConfigFile.yml | yq '.illumina.primer_r')
 
 #Possible errors
 #check the number of arguments
