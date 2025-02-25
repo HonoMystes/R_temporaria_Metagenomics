@@ -1,17 +1,18 @@
 #!/bin/bash
 #This is the forth part of the metagenomic analysis of my thesis, using qiime2
-#
+#This script will make the phylogeny analysis and the first part of the diversity analysis
 
 #variables
 metadata=$(cat ConfigFile.yml | yq '.raw.metadata')
 seqs_rep=$(cat ConfigFile.yml | yq '.tables.seqs_rep')
 freq_tbl=$(cat ConfigFile.yml | yq '.tables.freq_tbl')
 classifier=$(cat ConfigFile.yml | yq '.taxonomy.classifier')
-taxo= $(cat ConfigFile.yml | yq '.taxonomy.taxo_data')
-samp_depth= $(cat ConfigFile.yml | yq '.diversity.sampling_depth')
-seed= $(cat ConfigFile.yml | yq '.phylogeny.seed')
-rapid_boot= $(cat ConfigFile.yml | yq '.phylogeny.rapid_boot_seed')
-boot_rep= $(cat ConfigFile.yml | yq '.phylogeny.boot_rep')
+taxo=$(cat ConfigFile.yml | yq '.taxonomy.taxo_data')
+samp_depth=$(cat ConfigFile.yml | yq '.diversity.sampling_depth')
+seed=$(cat ConfigFile.yml | yq '.phylogeny.seed')
+rapid_boot=$(cat ConfigFile.yml | yq '.phylogeny.rapid_boot_seed')
+boot_rep=$(cat ConfigFile.yml | yq '.phylogeny.boot_rep')
+raref_cap=$(cat ConfigFile.yml | yq '.diversity.raref_cap')
 
 #filter representative sequencies table with the taxonomy artifact
 qiime taxa filter-table \
@@ -110,3 +111,56 @@ qiime emperor plot \
   --m-metadata-file $metadata \
   --p-custom-axes lat \
   --o-visualization bray_curtis_emperor_lat.qzv
+
+#filter samples based on rarefraction depth
+qiime feature-table filter-samples \
+  --i-table $freq_tbl \
+  --p-min-frequency $raref_cap \
+  --o-filtered-table ./table_{$raref_cap}.qza
+
+qiime taxa barplot \
+  --i-table ./table_{$raref_cap}.qza \
+  --i-taxonomy $taxo \
+  --m-metadata-file $metadata \
+  --o-visualization ./taxa_{$raref_cap}_barplot.qzv
+
+#diferential abundance
+qiime feature-table filter-features \
+  --i-table ./table_{$raref_cap}.qza \
+  --p-min-frequency 50 \
+  --p-min-samples 4 \
+  --o-filtered-table ./table_{$raref_cap}_abund.qza
+
+#searching for differencies in the gut microbiome between temp and diet
+qiime composition ancombc \
+  --i-table ./table_{$raref_cap}_abund.qza \
+  --m-metadata-file $metadata \
+  --p-formula 'diet' \
+  --o-differentials ./ancombc_diet.qza
+
+qiime composition da-barplot \
+  --i-data ./ancombc_donor.qza \
+  --p-significance-threshold 0.001 \
+  --o-visualization da_barplot_diet.qzv
+
+qiime composition ancombc \
+  --i-table ./table_{$raref_cap}_abund.qza \
+  --m-metadata-file $metadata \
+  --p-formula 'temp' \
+  --o-differentials ./ancombc_temp.qza
+
+qiime composition da-barplot \
+  --i-data ./ancombc_temp.qza \
+  --p-significance-threshold 0.001 \
+  --o-visualization da_barplot_temp.qzv
+
+qiime composition ancombc \
+  --i-table ./table_{$raref_cap}_abund.qza \
+  --m-metadata-file $metadata \
+  --p-formula 'diet + temp' \
+  --o-differentials ./ancombc_diet_temp.qza
+
+qiime composition da-barplot \
+  --i-data ./ancombc_diet_temp.qza \
+  --p-significance-threshold 0.001 \
+  --o-visualization da_barplot_diet_temp.qzv
