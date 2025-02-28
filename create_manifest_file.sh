@@ -2,10 +2,8 @@
 #One with the name of the sample_id and another with the path to the file
 
 #variables
-#path=$(cat ConfigFile.yml | yq '.raw.data_directory)
-#manifest=$(cat ConfigFile.yml | yq '.raw.manifest)
-path="/scratch/FPM/frogs_metagenomics/01-raw_data/Rana_temporaria"
-manifest=manifest.tsv
+path=$(cat ConfigFile.yml | yq '.raw.data_directory')
+manifest=$(cat ConfigFile.yml | yq '.raw.manifest')
 INFILE=./names.txt
 
 #list of names
