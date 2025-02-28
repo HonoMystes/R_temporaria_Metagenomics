@@ -1,6 +1,7 @@
 raw:
   data_directory: "/scratch/FPM/frogs_metagenomics/01-raw_data/Rana_temporaria"
-  metadata: 
+  metadata: "metadata.tsv"
+  manifest: "manifest.tsv"
 size:
   num_min_seq: 10 #minimum number of sequences per sample
 trim:  
