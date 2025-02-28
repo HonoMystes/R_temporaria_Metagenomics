@@ -16,7 +16,8 @@ echo ""
 data=$1 #name of the directory with the samples
 cutadapt_file_viz=trimmed-seqs_{$data}.qzv
 cutadapt_file_art=trimmed-seqs_{$data}.qza
-metadata=$2 #metadata file
+metadata=$(cat ConfigFile.yml | yq '.raw.metadata')
+manifest=$(cat ConfigFile.yml | yq '.raw.manifest')
 
 num_min_seq=$(cat ConfigFile.yml | yq '.size.num_min_seq')
 trim_forward=$(cat ConfigFile.yml | yq '.trim.trim_forward')
@@ -40,15 +41,6 @@ if [ $# -ne 2 ];
   exit 1
  fi
 
-#verify id the cutadapt file exists
-if [ ! -e "$cutdapt_file" ];
- then
-  help
-  echo "ERRO: O ficheiro $cutadapt_file não existe" > Erro.2.txt
-  cat Erro.2.txt
-  echo "Por favor verifique se o nome do ficheiro está correto e se está na diretoria"
-  exit 1
- fi
 #verify if the metadata file exists
 if [ ! -e "$metadata" ];
  then
@@ -59,11 +51,26 @@ if [ ! -e "$metadata" ];
   exit 1
  fi
 
+#verify if the manifest file exists
+if [ ! -e "$manifest" ];
+ then
+  help
+  echo "ERRO: O ficheiro $manifest não existe" > Erro.4.txt
+  cat Erro.4.txt
+  echo "Por favor verifique se o nome do ficheiro manifest está correto e se está na diretoria"
+  exit 1
+ fi
+
  #filtering samples
+qiime tools import \
+  --type "SampleData[SequencesWithQuality]" \
+  --input-format SingleEndFastqManifestPhred33V2 \
+  --input-path $manifest \
+  --output-path ./demux_seqs.qza
 
 qiime demux filter-samples \
   --i-demux $cutadapt_file_art \
-  --m-metadata-file ./$outputDir/per-sample-fastq-counts.tsv \
+  --m-metadata-file $metadata \
   --p-where 'CAST([forward sequence count] AS INT) > {$num_min_seq}' \
   --o-filtered-demux $cutadapt_file_art
 #alterar para número de sequencias que se quer in p-where
