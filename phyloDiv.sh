@@ -13,6 +13,7 @@ seed=$(cat ConfigFile.yml | yq '.phylogeny.seed')
 rapid_boot=$(cat ConfigFile.yml | yq '.phylogeny.rapid_boot_seed')
 boot_rep=$(cat ConfigFile.yml | yq '.phylogeny.boot_rep')
 raref_cap=$(cat ConfigFile.yml | yq '.diversity.raref_cap')
+outputDir_viz=$(cat ConfigFile.yml | yq '.directory_name.viz_dir_div')
 
 #filter representative sequencies table with the taxonomy artifact
 qiime taxa filter-table \
@@ -55,62 +56,63 @@ qiime diversity core-metrics-phylogenetic \
 qiime diversity alpha-rarefaction \
   --i-table $freq_tbl \
   --m-metadata-file $metadata \
-  --o-visualization ./alpha_rarefaction_curves.qzv \
+  --output-dir $outputDir_viz \
+  --o-visualization ./$outputDir_viz/alpha_rarefaction_curves.qzv \
   --p-min-depth 10 \
   --p-max-depth 4250 #check freq_file 
 
 qiime diversity alpha-group-significance \
   --i-alpha-diversity ./diversity_core_metrics/faith_pd_vector.qza \
   --m-metadata-file $metadata \
-  --o-visualization ./_diversity_core_metrics/faiths_pd_statistics.qzv
+  --o-visualization ./$outputDir_viz/faiths_pd_statistics.qzv
 qiime diversity alpha-group-significance \
  --i-alpha-diversity ./diversity_core_metrics/evenness_vector.qza \
  --m-metadata-file $metadata \
- --o-visualization ./diversity_core_metrics/evenness_statistics.qzv
+ --o-visualization ./$outputDir_viz/evenness_statistics.qzv
 
 #analysis of variance (ANOVA) to test whether multiple effects significantly impact alpha diversity
 qiime longitudinal anova \
   --m-metadata-file ./diversity_core_metrics/faith_pd_vector.qza \
   --m-metadata-file $metadata \
   --p-formula 'faith_pd ~ temperature * diet' \
-  --o-visualization ./core-metrics-results/faiths_pd_anova.qzv
+  --o-visualization ./$outputDir_viz/faiths_pd_anova.qzv
 
 #beta diversity
 qiime diversity beta-group-significance \
   --i-distance-matrix diversity_core_metrics/unweighted_unifrac_distance_matrix.qza \
   --m-metadata-file $metadata \
   --m-metadata-column temperature \
-  --o-visualization diversity_core_metrics/unweighted_unifrac_temp_significance.qzv
+  --o-visualization ./$outputDir_viz/unweighted_unifrac_temp_significance.qzv
 
 qiime diversity beta-group-significance \
   --i-distance-matrix diversity_core_metrics/weighted_unifrac_distance_matrix.qza \
   --m-metadata-file $metadata \
   --m-metadata-column temperature \
-  --o-visualization diversity_core_metrics/weighted-unifrac_temp_significance.qzv
+  --o-visualization ./$outputDir_viz/weighted-unifrac_temp_significance.qzv
 
 qiime diversity beta-group-significance \
   --i-distance-matrix diversity_core_metrics/unweighted_unifrac_distance_matrix.qza \
   --m-metadata-file $metadata \
   --m-metadata-column diet \
-  --o-visualization diversity_core_metrics/unweighted_unifrac_diet_significance.qzv
+  --o-visualization ./$outputDir_viz/unweighted_unifrac_diet_significance.qzv
 
 qiime diversity beta-group-significance \
   --i-distance-matrix diversity_core_metrics/weighted_unifrac_distance_matrix.qza \
   --m-metadata-file $metadata \
   --m-metadata-column diet \
-  --o-visualization diversity_core_metrics/weighted_unifrac_diet_significance.qzv
+  --o-visualization ./$outputDir_viz/weighted_unifrac_diet_significance.qzv
 
 #emperor plots
 qiime emperor plot \
   --i-pcoa diversity_core_metrics/unweighted_unifrac_pcoa_results.qza \
   --m-metadata-file $metadata \
   --p-custom-axes lat \
-  --o-visualization unifrac_emperor_lat.qzv
+  --o-visualization ./$outputDir_viz/unifrac_emperor_lat.qzv
 qiime emperor plot \
   --i-pcoa diversity_core_metrics/bray_curtis_pcoa_results.qza \
   --m-metadata-file $metadata \
   --p-custom-axes lat \
-  --o-visualization bray_curtis_emperor_lat.qzv
+  --o-visualization ./$outputDir_viz/bray_curtis_emperor_lat.qzv
 
 #filter samples based on rarefraction depth
 qiime feature-table filter-samples \
@@ -122,7 +124,7 @@ qiime taxa barplot \
   --i-table ./table_{$raref_cap}.qza \
   --i-taxonomy $taxo \
   --m-metadata-file $metadata \
-  --o-visualization ./taxa_{$raref_cap}_barplot.qzv
+  --o-visualization ./$outputDir_viz/taxa_{$raref_cap}_barplot.qzv
 
 #diferential abundance
 qiime feature-table filter-features \
@@ -139,9 +141,9 @@ qiime composition ancombc \
   --o-differentials ./ancombc_diet.qza
 
 qiime composition da-barplot \
-  --i-data ./ancombc_donor.qza \
+  --i-data ./ancombc_diet.qza \
   --p-significance-threshold 0.001 \
-  --o-visualization da_barplot_diet.qzv
+  --o-visualization ./$outputDir_viz/da_barplot_diet.qzv
 
 qiime composition ancombc \
   --i-table ./table_{$raref_cap}_abund.qza \
@@ -152,7 +154,7 @@ qiime composition ancombc \
 qiime composition da-barplot \
   --i-data ./ancombc_temp.qza \
   --p-significance-threshold 0.001 \
-  --o-visualization da_barplot_temp.qzv
+  --o-visualization ./$outputDir_viz/da_barplot_temp.qzv
 
 qiime composition ancombc \
   --i-table ./table_{$raref_cap}_abund.qza \
@@ -163,4 +165,14 @@ qiime composition ancombc \
 qiime composition da-barplot \
   --i-data ./ancombc_diet_temp.qza \
   --p-significance-threshold 0.001 \
-  --o-visualization da_barplot_diet_temp.qzv
+  --o-visualization ./$outputDir_viz/da_barplot_diet_temp.qzv
+
+#analysing how the gut microbiota is affected by diet
+qiime longitudinal volatility \
+  --m-metadata-file $metadata \
+  --m-metadata-file diversity_core_metrics/unweighted_unifrac_pcoa_results.qza \
+  --p-state-column day_it_started_the_experiment \
+  --p-individual-id-column sample_id \
+  --p-default-group-column 'diet' \
+  --p-default-metric 'Axis 2' \
+  --o-visualization ./$outputDir_viz/pc_vol.qzv
