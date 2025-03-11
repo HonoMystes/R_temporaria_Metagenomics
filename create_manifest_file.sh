@@ -4,14 +4,10 @@
 #variables
 path_file=$(cat ConfigFile.yml | yq '.raw.data_directory')
 manifest=$(cat ConfigFile.yml | yq '.raw.manifest')
-#path="/scratch/FPM/frogs_metagenomics/01-raw_data/Rana_temporaria"
-#manifest=manifest.tsv
 INFILE_R1=./names_R1.txt
-INFILE_R2=./names_R2.txt
 
 #list of names
 ls $path_file/*_R1.fastq.gz > $INFILE_R1
-
 
 #header
 echo "sample-id\tforward-absolute-filepath\treverse-absolute-filepath" > $manifest
