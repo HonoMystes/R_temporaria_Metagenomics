@@ -3,16 +3,16 @@
 #starting with importing samples to .qza (artefact) to run in qiime2 and then cutting the primers with cutadapt
 #The base files will be .fastq.gz format (in the data directory) and tsv for the metadata.
 #The data directory must contain the sequence files: R1.fastq.gz (forward) and R2.fastq.gz (reverse)
-#The name of this directory and the name of the metadata file will be used as arguments in that order.
+#The name of this population will be used as the argument
 #Copywrite Daniela Deodato, January 2025
 
 function help {
 echo ""
 echo "This code is the first part of the metagenomic analysis of my thesis, using the qiime2 software"
-echo "starting with importing samples to .qza (artefact) to run in qiime2 and then cutting the primers with cutadapt"
+echo "starting with importing samples to .qza (artefact) using the manifest file to run in qiime2 and then cutting the primers with cutadapt"
 echo "The base files will be .fastq.gz format (in the data directory) and tsv for the metadata."
 echo "The data directory must contain the sequence files: R1.fastq.gz (forward) and R2.fastq.gz (reverse)"
-echo "The name of this directory and the name of the metadata file will be used as arguments in that order"
+echo "The name of this population will be used as the argument"
 echo "Please make sure you have the qiime enviroment activated"
 echo ""
 }
@@ -27,22 +27,22 @@ prim_r=$(cat ConfigFile.yml | yq '.illumina.primer_r')
 
 #Possible errors
 #check the number of arguments
-if [ $# -ne 2 ];
+if [ $# -ne 1 ];
  then
   help
   echo "ERROR: wrong number of arguments"
-  echo "This script requires 2 arguments to run"
+  echo "This script requires only one argument to run"
   exit 1
  fi
-a pasta existe
-if [ ! -d "$data_directory" ];
+
+if [ ! -d "$outputDir" ];
  then
   help
-  echo "ERROR: directory $data_directory not found" 
+  echo "ERROR: directory $outputDir not found" 
   echo "Please check if the name is correct and the folder is in the current directory"
   exit 1
  fi
-'''
+
 #check if metadata file exists
 if [ ! -e "$metadata" ];
  then
@@ -51,13 +51,25 @@ if [ ! -e "$metadata" ];
   echo "Please check if the name is correct and the file is in the current directory"
   exit 1
  fi
-'''
+
+ #verify if the manifest file exists
+if [ ! -e "$manifest" ];
+ then
+  help
+  echo "ERROR: file $manifest not found"
+  echo "Please check if the name is correct and the file is in the current directory"
+  exit 1
+  else
+  echo "$manifest file present"
+ fi
+
 #Importing data into artifact
 echo "Importing into artifact type"
 qiime tools import \
-   --type EMPPairedEndSequences \
-   --input-path $data_directory \
-   --output-path {$data}.qza
+  --type 'SampleData[PairedEndSequencesWithQuality]' \
+  --input-path $manifest \
+  --output-path {$data}.qza \
+  --input-format PairedEndFastqManifestPhred64V2
 
 #Cutting primers with cutadapt
 #cutadapt
