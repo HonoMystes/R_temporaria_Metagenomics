@@ -1,8 +1,8 @@
 #!/bin/bash
 #This code is the first part of the metagenomic analysis of my thesis, using the qiime2 software
 #starting with importing samples to .qza (artefact) to run in qiime2 and then cutting the primers with cutadapt
-#The base files will be .fastq.gz format (in the data directory) and tsv for the metadata.
-#The data directory must contain the sequence files: R1.fastq.gz (forward) and R2.fastq.gz (reverse)
+#The samples are in a directory with the path to each sample in the manifest file.
+#The primers sequencies and output directory name are taken from de ConfigFile.yml
 #The name of this population will be used as the argument
 #Copywrite Daniela Deodato, January 2025
 
@@ -10,8 +10,8 @@ function help {
 echo ""
 echo "This code is the first part of the metagenomic analysis of my thesis, using the qiime2 software"
 echo "starting with importing samples to .qza (artefact) using the manifest file to run in qiime2 and then cutting the primers with cutadapt"
-echo "The base files will be .fastq.gz format (in the data directory) and tsv for the metadata."
-echo "The data directory must contain the sequence files: R1.fastq.gz (forward) and R2.fastq.gz (reverse)"
+echo "The samples are in a directory with the path to each sample in the manifest file"
+echo "The primers sequencies and output directory name are taken from de ConfigFile.yml"
 echo "The name of this population will be used as the argument"
 echo "Please make sure you have the qiime enviroment activated"
 echo ""
@@ -20,7 +20,7 @@ echo ""
 #Variables
 data=$1 #directory name
 data_directory='{$data}'/ #directory 
-metadata=$(cat ConfigFile.yml | yq '.raw.metadata')
+manifest=$(cat ConfigFile.yml | yq '.raw.manifest')
 outputDir=$(cat ConfigFile.yml | yq '.directory_name.output_dir_cutadapt')
 prim_f=$(cat ConfigFile.yml | yq '.illumina.primer_f')
 prim_r=$(cat ConfigFile.yml | yq '.illumina.primer_r')
@@ -40,15 +40,6 @@ if [ ! -d "$outputDir" ];
   help
   echo "ERROR: directory $outputDir not found" 
   echo "Please check if the name is correct and the folder is in the current directory"
-  exit 1
- fi
-
-#check if metadata file exists
-if [ ! -e "$metadata" ];
- then
-  help
-  echo "ERROR: file $metadata not found"
-  echo "Please check if the name is correct and the file is in the current directory"
   exit 1
  fi
 
@@ -94,4 +85,4 @@ qiime tools export \
   --input-path trimmed-seqs_{$data}.qzv \
   --output-path $outputDir
 
-echo "Check the "Interactive Quality Plot" tab in trimmed-seqs_{$data}.qzv file to know what to do on the next step."
+echo "Check the "Interactive Quality Plot" tab in trimmed-seqs_{$data}.qzv in $outputDir file to know what to do on the next step."
