@@ -1,19 +1,21 @@
 #!/bin/bash
 #This is the forth part of the metagenomic analysis of my thesis, using qiime2
 #This script will make the phylogeny analysis and the first part of the diversity analysis
+# the < | sed 's/\"//g'> is needed since the qiime enviroment adds ""
 
 #variables
-metadata=$(cat ConfigFile.yml | yq '.raw.metadata')
-seqs_rep=$(cat ConfigFile.yml | yq '.tables.seqs_rep')
-freq_tbl=$(cat ConfigFile.yml | yq '.tables.freq_tbl')
-classifier=$(cat ConfigFile.yml | yq '.taxonomy.classifier')
-taxo=$(cat ConfigFile.yml | yq '.taxonomy.taxo_data')
-samp_depth=$(cat ConfigFile.yml | yq '.diversity.sampling_depth')
-seed=$(cat ConfigFile.yml | yq '.phylogeny.seed')
-rapid_boot=$(cat ConfigFile.yml | yq '.phylogeny.rapid_boot_seed')
-boot_rep=$(cat ConfigFile.yml | yq '.phylogeny.boot_rep')
-raref_cap=$(cat ConfigFile.yml | yq '.diversity.raref_cap')
-outputDir_viz=$(cat ConfigFile.yml | yq '.directory_name.viz_dir_div')
+data=$1
+metadata=$(cat ConfigFile.yml | yq '.raw.metadata' | sed 's/\"//g')
+seqs_rep=$(cat ConfigFile.yml | yq '.tables.seqs_rep' | sed 's/\"//g')
+freq_tbl=$(cat ConfigFile.yml | yq '.tables.freq_tbl' | sed 's/\"//g')
+classifier=$(cat ConfigFile.yml | yq '.taxonomy.classifier' | sed 's/\"//g')
+taxo=$(cat ConfigFile.yml | yq '.taxonomy.taxo_data' | sed 's/\"//g')
+samp_depth=$(cat ConfigFile.yml | yq '.diversity.sampling_depth' | sed 's/\"//g')
+seed=$(cat ConfigFile.yml | yq '.phylogeny.seed' | sed 's/\"//g')
+rapid_boot=$(cat ConfigFile.yml | yq '.phylogeny.rapid_boot_seed' | sed 's/\"//g')
+boot_rep=$(cat ConfigFile.yml | yq '.phylogeny.boot_rep' | sed 's/\"//g')
+raref_cap=$(cat ConfigFile.yml | yq '.diversity.raref_cap' | sed 's/\"//g')
+outputDir_viz=$(cat ConfigFile.yml | yq '.directory_name.viz_dir_div' | sed 's/\"//g')
 
 #filter representative sequencies table with the taxonomy artifact
 qiime taxa filter-table \
@@ -118,24 +120,24 @@ qiime emperor plot \
 qiime feature-table filter-samples \
   --i-table $freq_tbl \
   --p-min-frequency $raref_cap \
-  --o-filtered-table ./table_{$raref_cap}.qza
+  --o-filtered-table ./table_${raref_cap}.qza
 
 qiime taxa barplot \
-  --i-table ./table_{$raref_cap}.qza \
+  --i-table ./table_${raref_cap}.qza \
   --i-taxonomy $taxo \
   --m-metadata-file $metadata \
-  --o-visualization ./$outputDir_viz/taxa_{$raref_cap}_barplot.qzv
+  --o-visualization ./$outputDir_viz/taxa_${raref_cap}_barplot.qzv
 
 #diferential abundance
 qiime feature-table filter-features \
-  --i-table ./table_{$raref_cap}.qza \
+  --i-table ./table_${raref_cap}.qza \
   --p-min-frequency 50 \
   --p-min-samples 4 \
-  --o-filtered-table ./table_{$raref_cap}_abund.qza
+  --o-filtered-table ./table_${raref_cap}_abund.qza
 
 #searching for differencies in the gut microbiome between temp and diet
 qiime composition ancombc \
-  --i-table ./table_{$raref_cap}_abund.qza \
+  --i-table ./table_${raref_cap}_abund.qza \
   --m-metadata-file $metadata \
   --p-formula 'diet' \
   --o-differentials ./ancombc_diet.qza
@@ -146,7 +148,7 @@ qiime composition da-barplot \
   --o-visualization ./$outputDir_viz/da_barplot_diet.qzv
 
 qiime composition ancombc \
-  --i-table ./table_{$raref_cap}_abund.qza \
+  --i-table ./table_${raref_cap}_abund.qza \
   --m-metadata-file $metadata \
   --p-formula 'temp' \
   --o-differentials ./ancombc_temp.qza
@@ -157,7 +159,7 @@ qiime composition da-barplot \
   --o-visualization ./$outputDir_viz/da_barplot_temp.qzv
 
 qiime composition ancombc \
-  --i-table ./table_{$raref_cap}_abund.qza \
+  --i-table ./table_${raref_cap}_abund.qza \
   --m-metadata-file $metadata \
   --p-formula 'diet + temp' \
   --o-differentials ./ancombc_diet_temp.qza
@@ -167,12 +169,3 @@ qiime composition da-barplot \
   --p-significance-threshold 0.001 \
   --o-visualization ./$outputDir_viz/da_barplot_diet_temp.qzv
 
-#analysing how the gut microbiota is affected by diet
-qiime longitudinal volatility \
-  --m-metadata-file $metadata \
-  --m-metadata-file diversity_core_metrics/unweighted_unifrac_pcoa_results.qza \
-  --p-state-column day_it_started_the_experiment \
-  --p-individual-id-column sample_id \
-  --p-default-group-column 'diet' \
-  --p-default-metric 'Axis 2' \
-  --o-visualization ./$outputDir_viz/pc_vol.qzv
