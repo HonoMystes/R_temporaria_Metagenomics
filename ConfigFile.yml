@@ -4,26 +4,26 @@ raw:
   metadata: "Temporaria_metagenomica_PopLund.tsv"
   manifest: "manifest.tsv"
 size:
-  num_min_seq: 10 #minimum number of sequences per sample
+  num_min_seq: 281 #minimum number of sequences per sample
 trim:  
-  trim_forward: 13 #change values for the left cut of the forward seq
-  trim_reverse: 13 #change values for the left cut of the reverse seq
+  trim_forward: 1 #change values for the left cut of the forward seq
+  trim_reverse: 1 #change values for the left cut of the reverse seq
 trunc:  
-  trunc_forward: 150 #change values for the right cut of the forward seq
-  trunc_reverse: 150 #change values for the right cut of the reverse seq
+  trunc_forward: 295 #change values for the right cut of the forward seq
+  trunc_reverse: 295 #change values for the right cut of the reverse seq
 directory_name:
-  output_dir_cutadapt: "./cutadapt_{$data}/" #name of the directory after cutting the primers
-  viz_dir_div: "./diversity_results_viz_{$data}/"
+  output_dir_cutadapt: "./cutadapt_${data}/" #name of the directory after cutting the primers
+  viz_dir_div: "./diversity_results_viz_${data}/"
 tables:
-  freq_tbl: "{$data}_freq_table.qza"
-  freq_tbl_viz: "{$data}_freq_table.qzv"
-  seqs_rep: "{$data}_rep_seqs.qza"
-  seqs_rep_viz: "{$data}_rep_seqs.qzv"
+  freq_tbl: "artifact/${data}_freq_table.qza"
+  freq_tbl_viz: "vizualizations/{$data}_freq_table.qzv"
+  seqs_rep: "artifact/${data}_rep_seqs.qza"
+  seqs_rep_viz: "vizualizations/${data}_rep_seqs.qzv"
 taxonomy:
   ref_taxa: "silva_ref_taxa.qza"
   ref_seq: "silva_ref_seqs.qza"
-  classifier: "silva_16S_classifier.qza"
-  taxo_data: "{$data}_taxonomy.qza"
+  classifier: "artifact/silva_16S_classifier.qza"
+  taxo_data: "artifact/${data}_taxonomy.qza"
 illumina:
   primer_f: "CCTACGGGNGGCWGCAG"
   primer_r: "GACTACHVGGGTATCTAATCC"
