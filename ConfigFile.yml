@@ -1,6 +1,7 @@
+---
 raw:
   data_directory: "/scratch/FPM/frogs_metagenomics/01-raw_data/Rana_temporaria"
-  metadata: "metadata.tsv"
+  metadata: "Temporaria_metagenomica_PopLund.tsv"
   manifest: "manifest.tsv"
 size:
   num_min_seq: 10 #minimum number of sequences per sample
@@ -11,18 +12,18 @@ trunc:
   trunc_forward: 150 #change values for the right cut of the forward seq
   trunc_reverse: 150 #change values for the right cut of the reverse seq
 directory_name:
-  output_dir_cutadapt: "./cutadapt_${data}/" #name of the directory after cutting the primers
-  viz_dir_div: "./diversity_results_viz_${data}/"
+  output_dir_cutadapt: "./cutadapt_{$data}/" #name of the directory after cutting the primers
+  viz_dir_div: "./diversity_results_viz_{$data}/"
 tables:
-  freq_tbl: "artifact/${data}_freq_table.qza"
-  freq_tbl_viz: "${data}_freq_table.qzv"
-  seqs_rep: "artifact/${data}_rep_seqs.qza"
-  seqs_rep_viz: "${data}_rep_seqs.qzv"
+  freq_tbl: "{$data}_freq_table.qza"
+  freq_tbl_viz: "{$data}_freq_table.qzv"
+  seqs_rep: "{$data}_rep_seqs.qza"
+  seqs_rep_viz: "{$data}_rep_seqs.qzv"
 taxonomy:
   ref_taxa: "silva_ref_taxa.qza"
   ref_seq: "silva_ref_seqs.qza"
-  classifier: "artifact/silva_16S_classifier.qza"
-  taxo_data: "artifact/${data}_taxonomy.qza"
+  classifier: "silva_16S_classifier.qza"
+  taxo_data: "{$data}_taxonomy.qza"
 illumina:
   primer_f: "CCTACGGGNGGCWGCAG"
   primer_r: "GACTACHVGGGTATCTAATCC"
@@ -33,3 +34,4 @@ phylogeny:
 diversity:
   samplig_depth: 1103 #chose based on what we see in the freq_table to retain the min of frequency and to keep the max number of seqs per sample 
   raref_cap: 2000 #see where in the alpha rarefraction it stabilizes
+...
