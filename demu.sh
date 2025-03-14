@@ -19,11 +19,10 @@ echo ""
 
 #Variables
 data=$1 #directory name
-data_directory='{$data}'/ #directory 
-manifest=$(cat ConfigFile.yml | yq '.raw.manifest')
-outputDir=$(cat ConfigFile.yml | yq '.directory_name.output_dir_cutadapt')
-prim_f=$(cat ConfigFile.yml | yq '.illumina.primer_f')
-prim_r=$(cat ConfigFile.yml | yq '.illumina.primer_r')
+manifest=$(cat ConfigFile.yml | yq '.raw.manifest' | sed 's/\"//g')
+outputDir=$(cat ConfigFile.yml | yq '.directory_name.output_dir_cutadapt' | sed 's/\"//g')
+prim_f=$(cat ConfigFile.yml | yq '.illumina.primer_f' | sed 's/\"//g')
+prim_r=$(cat ConfigFile.yml | yq '.illumina.primer_r' | sed 's/\"//g')
 
 #Possible errors
 #check the number of arguments
@@ -32,14 +31,6 @@ if [ $# -ne 1 ];
   help
   echo "ERROR: wrong number of arguments"
   echo "This script requires only one argument to run"
-  exit 1
- fi
-
-if [ ! -d "$outputDir" ];
- then
-  help
-  echo "ERROR: directory $outputDir not found" 
-  echo "Please check if the name is correct and the folder is in the current directory"
   exit 1
  fi
 
@@ -59,30 +50,42 @@ echo "Importing into artifact type"
 qiime tools import \
   --type 'SampleData[PairedEndSequencesWithQuality]' \
   --input-path $manifest \
-  --output-path {$data}.qza \
-  --input-format PairedEndFastqManifestPhred64V2
+  --output-path $data.qza \
+  --input-format PairedEndFastqManifestPhred33V2
+
+#check to see if the import worked
+ #verify if the manifest file exists
+if [ ! -e "$data.qza" ];
+ then
+  help
+  echo "ERROR: file $data.qza  not found"
+  echo "Please check if the name is correct and the file is in the current directory"
+  exit 1
+  else
+  echo "$data.qza file present"
+ fi
 
 #Cutting primers with cutadapt
 #cutadapt
 echo "Cutting primers with cutadapt"
 qiime cutadapt trim-paired \
-        --i-demultiplexed-sequences {$data}.qza \
+        --i-demultiplexed-sequences $data.qza \
         --p-adapter-f $prim_f \
         --p-adapter-r $prim_r \
         --p-error-rate 0 \
-        --o-trimmed-sequences trimmed-seqs_{$data}.qza \
+        --o-trimmed-sequences trimmed-seqs_$data.qza \
         --verbose
 
 #Summarize for vizualization
 echo "Summarizing demultiplexing"
 qiime demux summarize \
-   --i-data trimmed-seqs_{$data}.qza \
-   --o-visualization trimmed-seqs_{$data}.qzv
+   --i-data trimmed-seqs_$data.qza \
+   --o-visualization trimmed-seqs_$data.qzv
 
 #Vizualization
 echo "Preparing visualization"
 qiime tools export \
-  --input-path trimmed-seqs_{$data}.qzv \
+  --input-path trimmed-seqs_$data.qzv \
   --output-path $outputDir
 
-echo "Check the "Interactive Quality Plot" tab in trimmed-seqs_{$data}.qzv in $outputDir file to know what to do on the next step."
+echo "Check the "Interactive Quality Plot" tab in trimmed-seqs_$data.qzv in $outputDir file to know what to do on the next step."
