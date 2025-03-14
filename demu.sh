@@ -4,6 +4,7 @@
 #The samples are in a directory with the path to each sample in the manifest file.
 #The primers sequencies and output directory name are taken from de ConfigFile.yml
 #The name of this population will be used as the argument
+# the < | sed 's/\"//g'> is needed since the qiime enviroment adds ""
 #Copywrite Daniela Deodato, January 2025
 
 function help {
@@ -45,41 +46,45 @@ if [ ! -e "$manifest" ];
   echo "$manifest file present"
  fi
 
+#directories
+mkdir artifacts
+mkdir vizualizations
+
 #Importing data into artifact
 echo "Importing into artifact type"
 qiime tools import \
   --type 'SampleData[PairedEndSequencesWithQuality]' \
   --input-path $manifest \
-  --output-path $data.qza \
+  --output-path artifact/$data.qza \
   --input-format PairedEndFastqManifestPhred33V2
 
 #check to see if the import worked
  #verify if the manifest file exists
-if [ ! -e "$data.qza" ];
+if [ ! -e "artifact/$data.qza" ];
  then
   help
-  echo "ERROR: file $data.qza  not found"
+  echo "ERROR: file artifact/$data.qza  not found"
   echo "Please check if the name is correct and the file is in the current directory"
   exit 1
   else
-  echo "$data.qza file present"
+  echo "artifact/$data.qza file present"
  fi
 
 #Cutting primers with cutadapt
 #cutadapt
 echo "Cutting primers with cutadapt"
 qiime cutadapt trim-paired \
-        --i-demultiplexed-sequences $data.qza \
+        --i-demultiplexed-sequences artifact/$data.qza \
         --p-adapter-f $prim_f \
         --p-adapter-r $prim_r \
         --p-error-rate 0 \
-        --o-trimmed-sequences trimmed-seqs_$data.qza \
+        --o-trimmed-sequences artifact/trimmed-seqs_$data.qza \
         --verbose
 
 #Summarize for vizualization
 echo "Summarizing demultiplexing"
 qiime demux summarize \
-   --i-data trimmed-seqs_$data.qza \
+   --i-data artifact/trimmed-seqs_$data.qza \
    --o-visualization trimmed-seqs_$data.qzv
 
 #Vizualization
@@ -87,5 +92,9 @@ echo "Preparing visualization"
 qiime tools export \
   --input-path trimmed-seqs_$data.qzv \
   --output-path $outputDir
+
+#organize
+mv ./*.qza artifact/
+mv ./*.qzv vizualizations/
 
 echo "Check the "Interactive Quality Plot" tab in trimmed-seqs_$data.qzv in $outputDir file to know what to do on the next step."
