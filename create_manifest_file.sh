@@ -2,8 +2,8 @@
 #One with the name of the sample_id and another with the path to the file
 
 #variables
-path_file=$(cat ConfigFile.yml | yq '.raw.data_directory')
-manifest=$(cat ConfigFile.yml | yq '.raw.manifest')
+path_file=$(cat ConfigFile.yml | yq '.raw.data_directory' | sed 's/\"//g')
+manifest=$(cat ConfigFile.yml | yq '.raw.manifest' | sed 's/\"//g')
 INFILE_R1=./names_R1.txt
 
 #list of names
