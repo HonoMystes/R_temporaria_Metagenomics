@@ -20,10 +20,14 @@ echo ""
 
 #Variables
 data=$1 #directory name
+
+path_file=$(cat ConfigFile.yml | yq '.raw.data_directory' | sed 's/\"//g')
 manifest=$(cat ConfigFile.yml | yq '.raw.manifest' | sed 's/\"//g')
 outputDir=$(cat ConfigFile.yml | yq '.directory_name.output_dir_cutadapt' | sed 's/\"//g')
 prim_f=$(cat ConfigFile.yml | yq '.illumina.primer_f' | sed 's/\"//g')
 prim_r=$(cat ConfigFile.yml | yq '.illumina.primer_r' | sed 's/\"//g')
+INFILE_R1=./names_R1.txt
+INFILE=quality_R1names.txt
 
 #Possible errors
 #check the number of arguments
@@ -35,19 +39,47 @@ if [ $# -ne 1 ];
   exit 1
  fi
 
+#directories
+mkdir qualityDir
+ls $path_file/*_R1.fastq.gz > $INFILE
+
+#quality filtering the sequencies using fastp, we will use the infile created in create_manifest_file.sh
+while read LINE; do
+	id=$(basename $LINE)
+	id_R2=$(basename $LINE | sed 's/_R1/_R2/g')
+	R2=$(echo $LINE | sed 's/_R1/_R2/g')
+	fastp -i $LINE -I $R2 -o ./qualityDir/out_$id -O ./qualityDir/out_$id_R2
+done < $INFILE
+
+echo "----------------"
+echo $INFILE
+
+#make manifest file
+ls /home/ddeodato/rana/qualityDir/*_R1.fastq.gz > $INFILE_R1
+
+#header
+echo "sample-id	forward-absolute-filepath	reverse-absolute-filepath" > $manifest
+
+#filling tsv
+while read LINE; do
+	sample_id=$(basename -s .fastq.gz $LINE | sed 's/_R1//g')
+        R2=$(echo $LINE | sed 's/_R1/_R2/g')
+        echo "$sample_id	$LINE	$R2" >> $manifest
+done < $INFILE_R1
+
+#check if manifest file was created
  #verify if the manifest file exists
 if [ ! -e "$manifest" ];
  then
   help
-  echo "ERROR: file $manifest not found"
-  echo "Please check if the name is correct and the file is in the current directory"
-  exit 1
-  else
-  echo "$manifest file present"
+   echo "ERROR: file $manifest not found"
+   echo "Please check if the name is correct and the file is in the current directory"
+   exit 1
+   else
+   echo "$manifest file present"
  fi
-
-#directories
-mkdir artifacts
+echo "---------------------------------/"
+mkdir artifact
 mkdir vizualizations
 
 #Importing data into artifact
@@ -94,7 +126,6 @@ qiime tools export \
   --output-path $outputDir
 
 #organize
-mv ./*.qza artifact/
 mv ./*.qzv vizualizations/
 
 echo "Check the "Interactive Quality Plot" tab in trimmed-seqs_$data.qzv in $outputDir file to know what to do on the next step."
