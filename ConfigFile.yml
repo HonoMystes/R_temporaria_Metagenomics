@@ -1,29 +1,29 @@
 ---
 raw:
   data_directory: "/scratch/FPM/frogs_metagenomics/01-raw_data/Rana_temporaria"
-  metadata: "Temporaria_metagenomica_PopLund.tsv"
+  metadata: "metadata_PopLund.tsv"
   manifest: "manifest.tsv"
 size:
   num_min_seq: 281 #minimum number of sequences per sample
 trim:  
-  trim_forward: 1 #change values for the left cut of the forward seq
-  trim_reverse: 1 #change values for the left cut of the reverse seq
+  trim_forward: 0 #change values for the left cut of the forward seq
+  trim_reverse: 0 #change values for the left cut of the reverse seq
 trunc:  
-  trunc_forward: 295 #change values for the right cut of the forward seq
-  trunc_reverse: 295 #change values for the right cut of the reverse seq
+  trunc_forward: 0 #change values for the right cut of the forward seq
+  trunc_reverse: 0 #change values for the right cut of the reverse seq
 directory_name:
-  output_dir_cutadapt: "./cutadapt_${data}/" #name of the directory after cutting the primers
-  viz_dir_div: "./diversity_results_viz_${data}/"
+  output_dir_cutadapt: "./cutadapt_PopLund/" #name of the directory after cutting the primers
+  viz_dir_div: "./diversity_results_viz_PopLund/"
 tables:
-  freq_tbl: "artifact/${data}_freq_table.qza"
-  freq_tbl_viz: "vizualizations/{$data}_freq_table.qzv"
-  seqs_rep: "artifact/${data}_rep_seqs.qza"
-  seqs_rep_viz: "vizualizations/${data}_rep_seqs.qzv"
+  freq_tbl: "artifact/PopLund_freq_table.qza"
+  freq_tbl_viz: "vizualizations/PopLund_freq_table.qzv"
+  seqs_rep: "artifact/PopLund_rep_seqs.qza"
+  seqs_rep_viz: "vizualizations/PopLund_rep_seqs.qzv"
 taxonomy:
   ref_taxa: "silva_ref_taxa.qza"
   ref_seq: "silva_ref_seqs.qza"
   classifier: "artifact/silva_16S_classifier.qza"
-  taxo_data: "artifact/${data}_taxonomy.qza"
+  taxo_data: "artifact/PopLund_taxonomy.qza"
 illumina:
   primer_f: "CCTACGGGNGGCWGCAG"
   primer_r: "GACTACHVGGGTATCTAATCC"
