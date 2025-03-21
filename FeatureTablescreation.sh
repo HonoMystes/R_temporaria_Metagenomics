@@ -91,6 +91,15 @@ echo "pass denoising"
 
 [ ! -e "$seqs_rep" ] && help && echo "ERROR: $seqs_rep not found" && exit 1
 
+if [ ! -d "${data}_uchime-dn-out" ];
+ then
+  echo "Proceding with chimera elimination"
+  else
+  echo "${data}_uchime-dn-out directory is present"
+  echo "deleting exixting ${data}_uchime-dn-out directory"
+  rm -rf ${data}_uchime-dn-out
+ fi
+
 ###Exclude Chimeras
 echo "Examining for chimeras"
 echo "Running de novo" 
@@ -118,6 +127,7 @@ qiime feature-table filter-seqs \
 
 qiime feature-table summarize \
   --i-table $freq_tbl \
+  --m-sample-metadata-file $metadata
   --o-visualization $freq_tbl_viz
 
 echo "check $freq_tbl_viz to know what to do on script phyloDiv.sh"
