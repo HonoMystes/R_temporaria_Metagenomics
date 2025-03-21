@@ -2,6 +2,18 @@
 #This is the forth part of the metagenomic analysis of my thesis, using qiime2
 #This script will make the phylogeny analysis and the first part of the diversity analysis
 # the < | sed 's/\"//g'> is needed since the qiime enviroment adds ""
+#Copywrite Daniela Deodato, January 2025
+
+#stops if error
+set -e
+
+function help {
+echo ""
+echo "This is the fifth part of the metagenomic analysis of my thesis, using qiime2"
+echo "This script will make the diversity analysis after analysing the alpha rarefraction in ./$outputDir_viz/alpha_rarefaction_curves.qzv"
+echo "the script runs with the argument of the name of the population"
+echo ""
+}
 
 #variables
 data=$1
@@ -16,6 +28,61 @@ rapid_boot=$(cat ConfigFile.yml | yq '.phylogeny.rapid_boot_seed' | sed 's/\"//g
 boot_rep=$(cat ConfigFile.yml | yq '.phylogeny.boot_rep' | sed 's/\"//g')
 raref_cap=$(cat ConfigFile.yml | yq '.diversity.raref_cap' | sed 's/\"//g')
 outputDir_viz=$(cat ConfigFile.yml | yq '.directory_name.viz_dir_div' | sed 's/\"//g')
+
+#Possible errors
+#check the number of arguments
+if [ $# -ne 1 ];
+ then
+  help
+  echo "ERROR: wrong number of arguments"
+  echo "This script requires only one argument to run"
+  exit 1
+ fi
+
+#check if metadata file exists
+if [ ! -e "$metadata" ];
+ then
+  help
+  echo "ERROR: file $metadata not found"
+  echo "Please check if the name is correct and the file is in the current directory"
+  exit 1
+ fi
+
+#check if frequency table exists
+if [ ! -e "$freq_tbl" ];
+ then
+  help
+  echo "ERROR: file $freq_tbl not found"
+  echo "Please check if the name is correct and the file is in the current directory"
+  exit 1
+ fi
+
+#check if representative sequences table exists
+if [ ! -e "$seqs_rep" ];
+ then
+  help
+  echo "ERROR: file $seqs_rep not found"
+  echo "Please check if the name is correct and the file is in the current directory"
+  exit 1
+ fi
+
+#check if classifier exists
+if [ ! -e "$classifier" ];
+ then
+  help
+  echo "ERROR: file $classifier not found"
+  echo "Please check if the name is correct and the file is in the current directory"
+  exit 1
+ fi
+
+#check if taxonomy file exists
+if [ ! -e "$taxo" ];
+ then
+  help
+  echo "ERROR: file $taxo not found"
+  echo "Please check if the name is correct and the file is in the current directory"
+  exit 1
+ fi
 
 #filter representative sequencies table with the taxonomy artifact
 qiime taxa filter-table \
@@ -116,57 +183,4 @@ qiime emperor plot \
   --p-custom-axes lat \
   --o-visualization ./$outputDir_viz/bray_curtis_emperor_lat.qzv
 
-#filter samples based on rarefraction depth
-qiime feature-table filter-samples \
-  --i-table $freq_tbl \
-  --p-min-frequency $raref_cap \
-  --o-filtered-table ./table_${raref_cap}.qza
-
-qiime taxa barplot \
-  --i-table ./table_${raref_cap}.qza \
-  --i-taxonomy $taxo \
-  --m-metadata-file $metadata \
-  --o-visualization ./$outputDir_viz/taxa_${raref_cap}_barplot.qzv
-
-#diferential abundance
-qiime feature-table filter-features \
-  --i-table ./table_${raref_cap}.qza \
-  --p-min-frequency 50 \
-  --p-min-samples 4 \
-  --o-filtered-table ./table_${raref_cap}_abund.qza
-
-#searching for differencies in the gut microbiome between temp and diet
-qiime composition ancombc \
-  --i-table ./table_${raref_cap}_abund.qza \
-  --m-metadata-file $metadata \
-  --p-formula 'diet' \
-  --o-differentials ./ancombc_diet.qza
-
-qiime composition da-barplot \
-  --i-data ./ancombc_diet.qza \
-  --p-significance-threshold 0.001 \
-  --o-visualization ./$outputDir_viz/da_barplot_diet.qzv
-
-qiime composition ancombc \
-  --i-table ./table_${raref_cap}_abund.qza \
-  --m-metadata-file $metadata \
-  --p-formula 'temp' \
-  --o-differentials ./ancombc_temp.qza
-
-qiime composition da-barplot \
-  --i-data ./ancombc_temp.qza \
-  --p-significance-threshold 0.001 \
-  --o-visualization ./$outputDir_viz/da_barplot_temp.qzv
-
-qiime composition ancombc \
-  --i-table ./table_${raref_cap}_abund.qza \
-  --m-metadata-file $metadata \
-  --p-formula 'diet + temp' \
-  --o-differentials ./ancombc_diet_temp.qza
-
-qiime composition da-barplot \
-  --i-data ./ancombc_diet_temp.qza \
-  --p-significance-threshold 0.001 \
-  --o-visualization ./$outputDir_viz/da_barplot_diet_temp.qzv
-
-
+echo "To continue diversity analysis please check the ./$outputDir_viz/alpha_rarefaction_curves.qzv file and run Div2.sh"
