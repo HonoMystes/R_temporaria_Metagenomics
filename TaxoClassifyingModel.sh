@@ -6,6 +6,22 @@
 #It uses the metadata file, the frequencies and the sequencies tables obtained in the previous script
 #The resulting output is the taxonomy of our data 
 # the < | sed 's/\"//g'> is needed since the qiime enviroment adds ""
+##Copywrite Daniela Deodato, January 2025
+
+#stops if error
+set -e
+
+function help {
+echo ""
+echo "This is the third part of the metagenomic analysis of my thesis, using qiime2"
+echo "This script requires the same arguement used for the previous 2"
+echo "This script creates a classifing model specific of the region 16S of the SILVA database in qiime2"
+echo "The reference file is pulled form the qiime2 repository"
+echo "It uses the metadata file, the frequencies and the sequencies tables obtained in the previous script"
+echo "the script runs with the argument of the name of the population"
+echo "The resulting output is the taxonomy of our data"
+echo ""
+}
 
 #variables
 data=$1
@@ -20,6 +36,42 @@ seqs_rep=$(cat ConfigFile.yml | yq '.tables.seqs_rep' | sed 's/\"//g')
 prim_f=$(cat ConfigFile.yml | yq '.illumina.primer_f' | sed 's/\"//g')
 prim_r=$(cat ConfigFile.yml | yq '.illumina.primer_r' | sed 's/\"//g')
 taxo=$(cat ConfigFile.yml | yq '.taxonomy.taxo_data' | sed 's/\"//g')
+
+#check the number of arguments
+if [ $# -ne 1 ];
+ then
+  help
+  echo "ERROR: wrong number of arguments"
+  echo "This script requires only one argument to run"
+  exit 1
+ fi
+
+#check if metadata file exists
+if [ ! -e "$metadata" ];
+ then
+  help
+  echo "ERROR: file $metadata not found"
+  echo "Please check if the name is correct and the file is in the current directory"
+  exit 1
+ fi
+
+#check if frequency table exists
+if [ ! -e "$freq_tbl" ];
+ then
+  help
+  echo "ERROR: file $freq_tbl not found"
+  echo "Please check if the name is correct and the file is in the current directory"
+  exit 1
+ fi
+
+#check if representative sequences table exists
+if [ ! -e "$seqs_rep" ];
+ then
+  help
+  echo "ERROR: file $seqs_rep not found"
+  echo "Please check if the name is correct and the file is in the current directory"
+  exit 1
+ fi
 
 #Get SILVA database
 qiime rescript get-silva-data \
@@ -84,7 +136,7 @@ qiime feature-classifier fit-classifier-naive-bayes \
 #test classifier
 qiime feature-classifier classify-sklearn \
   --i-classifier $classifier \
-  --i-reads $ref_file_taxa \
+  --i-reads $ref_file_seq \
   --o-classification taxonomy.qza
 #tabulate to visualize in qiime 2
 qiime metadata tabulate \
