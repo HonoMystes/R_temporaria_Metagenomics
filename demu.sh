@@ -7,6 +7,9 @@
 # the < | sed 's/\"//g'> is needed since the qiime enviroment adds ""
 #Copywrite Daniela Deodato, January 2025
 
+#stops if error
+set -e
+
 function help {
 echo ""
 echo "This code is the first part of the metagenomic analysis of my thesis, using the qiime2 software"
@@ -62,7 +65,7 @@ echo "sample-id	forward-absolute-filepath	reverse-absolute-filepath" > $manifest
 
 #filling tsv
 while read LINE; do
-	sample_id=$(basename -s .fastq.gz $LINE | sed 's/_R1//g')
+	sample_id=$(basename -s .fastq.gz $LINE | sed 's/_R1//g' | sed 's/out_//g')
         R2=$(echo $LINE | sed 's/_R1/_R2/g')
         echo "$sample_id	$LINE	$R2" >> $manifest
 done < $INFILE_R1
