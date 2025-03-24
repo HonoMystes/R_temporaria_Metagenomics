@@ -163,7 +163,7 @@ qiime taxa barplot \
 
 #organize
 mv ./*.qza artifact/
-mv ./*.qzv 
+mv ./*.qzv vizualizations
 
 echo "Check the "${data}_taxonomy.qzv" file in qiime2 to see the confidance of the classifier of the reference file with the data"
 echo "The ${data}_taxa_bar_plots.qzv shows the taxonomic composition"
