@@ -127,7 +127,7 @@ qiime feature-table filter-seqs \
 
 qiime feature-table summarize \
   --i-table $freq_tbl \
-  --m-sample-metadata-file $metadata
+  --m-sample-metadata-file $metadata \
   --o-visualization $freq_tbl_viz
 
 echo "check $freq_tbl_viz to know what to do on script phyloDiv.sh"
