@@ -123,6 +123,7 @@ qiime emperor plot \
   --i-pcoa diversity_core_metrics/unweighted_unifrac_pcoa_results.qza \
   --m-metadata-file $metadata \
   --o-visualization $outputDir_viz/unifrac_emperor.qzv
+  
 qiime emperor plot \
   --i-pcoa diversity_core_metrics/bray_curtis_pcoa_results.qza \
   --m-metadata-file $metadata \
