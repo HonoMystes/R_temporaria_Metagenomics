@@ -1,37 +1,32 @@
 ---
 raw:
   data_directory: "/scratch/FPM/frogs_metagenomics/01-raw_data/Rana_temporaria"
-  metadata: "metadata_PopLund.tsv"
+  metadata: "./safe/metadata_PopLund.tsv"
   manifest: "manifest.tsv"
+  threads: 24
 size:
   num_min_seq: 281 #minimum number of sequences per sample
 trim:  
-  trim_forward: 0 #change values for the left cut of the forward seq
-  trim_reverse: 0 #change values for the left cut of the reverse seq
-trunc:  
-  trunc_forward: 0 #change values for the right cut of the forward seq
-  trunc_reverse: 0 #change values for the right cut of the reverse seq
+  length: 300 #change values for the right cut of the reverse seq
 directory_name:
   output_dir_cutadapt: "./cutadapt_PopLund/" #name of the directory after cutting the primers
   viz_dir_div: "./diversity_results_viz_PopLund/"
 tables:
-  freq_tbl: "artifact/PopLund_freq_table.qza"
-  freq_tbl_viz: "vizualizations/PopLund_freq_table.qzv"
-  seqs_rep: "artifact/PopLund_rep_seqs.qza"
-  seqs_rep_viz: "vizualizations/PopLund_rep_seqs.qzv"
+  freq_tbl: "artifact_PopLund/PopLund_freq_table.qza"
+  freq_tbl_viz: "vizualizations_PopLund/PopLund_freq_table.qzv"
+  freq_wctbl: "artifact_PopLund/w_chimeraPopLund_freq_table.qza"
+  seqs_rep: "artifact_PopLund/PopLund_rep_seqs.qza"
+  seqs_wcrep: "artifact_PopLund/w_chimeraPopLund_rep_seqs.qza" 
+  seqs_rep_viz: "vizualizations_PopLund/PopLund_rep_seqs.qzv"
 taxonomy:
   ref_taxa: "silva_ref_taxa.qza"
   ref_seq: "silva_ref_seqs.qza"
-  classifier: "artifact/silva_16S_classifier.qza"
-  taxo_data: "artifact/PopLund_taxonomy.qza"
+  classifier: "artifact_PopLund/silva_16S_classifier.qza"
+  taxo_data: "artifact_PopLund/PopLund_taxonomy.qza"
 illumina:
   primer_f: "CCTACGGGNGGCWGCAG"
   primer_r: "GACTACHVGGGTATCTAATCC"
-phylogeny:
-  seed: 1723
-  rapid_boot_seed: 9384
-  boot_rep: 100
 diversity:
-  samplig_depth: 1103 #chose based on what we see in the freq_table to retain the min of frequency and to keep the max number of seqs per sample 
-  raref_cap: 2000 #see where in the alpha rarefraction it stabilizes
+  max_depth: 1230 #check maximum frequency in freq_table
+  raref_cap: 200 #see where in the alpha rarefraction it stabilizes
 ...
