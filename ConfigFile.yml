@@ -3,7 +3,7 @@ raw:
   data_directory: "/scratch/FPM/frogs_metagenomics/01-raw_data/Rana_temporaria"
   metadata: "./safe/metadata_PopLund.tsv"
   manifest: "manifest.tsv"
-  threads: 24
+  threads: 24 #number of cores to run the code
 size:
   num_min_seq: 281 #minimum number of sequences per sample
 trim:  
@@ -13,11 +13,11 @@ directory_name:
   viz_dir_div: "./diversity_results_viz_PopLund/"
 tables:
   freq_tbl: "artifact_PopLund/PopLund_freq_table.qza"
-  freq_tbl_viz: "vizualizations_PopLund/PopLund_freq_table.qzv"
+  freq_tbl_viz: "visualizations_PopLund/PopLund_freq_table.qzv"
   freq_wctbl: "artifact_PopLund/w_chimeraPopLund_freq_table.qza"
   seqs_rep: "artifact_PopLund/PopLund_rep_seqs.qza"
   seqs_wcrep: "artifact_PopLund/w_chimeraPopLund_rep_seqs.qza" 
-  seqs_rep_viz: "vizualizations_PopLund/PopLund_rep_seqs.qzv"
+  seqs_rep_viz: "visualizations_PopLund/PopLund_rep_seqs.qzv"
 taxonomy:
   ref_taxa: "silva_ref_taxa.qza"
   ref_seq: "silva_ref_seqs.qza"
