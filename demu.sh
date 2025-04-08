@@ -26,6 +26,7 @@ data=$1 #directory name
 
 path_file=$(cat ConfigFile.yml | yq '.raw.data_directory' | sed 's/\"//g')
 manifest=$(cat ConfigFile.yml | yq '.raw.manifest' | sed 's/\"//g')
+threads=$(cat ConfigFile.yml | yq '.raw.threads' | sed 's/\"//g')
 outputDir=$(cat ConfigFile.yml | yq '.directory_name.output_dir_cutadapt' | sed 's/\"//g')
 prim_f=$(cat ConfigFile.yml | yq '.illumina.primer_f' | sed 's/\"//g')
 prim_r=$(cat ConfigFile.yml | yq '.illumina.primer_r' | sed 's/\"//g')
@@ -51,7 +52,7 @@ while read LINE; do
 	id=$(basename $LINE)
 	id_R2=$(basename $LINE | sed 's/_R1/_R2/g')
 	R2=$(echo $LINE | sed 's/_R1/_R2/g')
-	fastp -i $LINE -I $R2 -h fastp_$id.html -j fastp_$id.json -o ./qualityDir_$data/out_$id -O ./qualityDir_$data/out_$id_R2 
+	fastp -i $LINE -I $R2 -w $threads -h fastp_$id.html -j fastp_$id.json -o ./qualityDir_$data/out_$id -O ./qualityDir_$data/out_$id_R2 
 done < $INFILE
 echo "----------------"
 echo $INFILE
@@ -85,7 +86,7 @@ if [ ! -e "$manifest" ];
  fi
 echo "---------------------------------/"
 mkdir -p artifact_$data
-mkdir -p vizualizations_$data
+mkdir -p visualizations_$data
 
 #Importing data into artifact
 echo "Importing into artifact type"
@@ -105,7 +106,7 @@ if [ ! -e "artifact_$data/$data.qza" ];
   exit 1
   else
   echo "artifact_$data/$data.qza file present"
- fi
+fi
 
 #Cutting primers with cutadapt
 #cutadapt
@@ -115,6 +116,7 @@ qiime cutadapt trim-paired \
         --p-adapter-f $prim_f \
         --p-adapter-r $prim_r \
         --p-error-rate 0 \
+        --p-cores $threads \
         --o-trimmed-sequences artifact_$data/trimmed-seqs_$data.qza \
         --verbose
 
@@ -122,8 +124,9 @@ qiime cutadapt trim-paired \
 echo "Summarizing demultiplexing"
 qiime demux summarize \
    --i-data artifact_$data/trimmed-seqs_$data.qza \
-   --o-visualization vizualizations_$data/trimmed-seqs_$data.qzv
+   --o-visualization visualizations_$data/trimmed-seqs_$data.qzv
 
+#to avoid errors with qiime2 if an $outputDir already exists it is erased
 if [ -d $outputDir ];
  then
  rm -rf $outputDir
@@ -132,13 +135,14 @@ fi
 #Vizualization
 echo "Preparing visualization"
 qiime tools export \
-  --input-path vizualizations_$data/trimmed-seqs_$data.qzv \
+  --input-path visualizations_$data/trimmed-seqs_$data.qzv \
   --output-path $outputDir
 
-mv $INFILE_R1 $outputdir
-mv $INFILE $outputDir
+#organizing outputs
+mv "$INFILE_R1" "$outputDir"
+mv "$INFILE" "$outputDir"
 
-echo "Check the "Interactive Quality Plot" tab in vizualizations_$data/trimmed-seqs_$data.qzv in $outputDir file to know what to do on the next step."
+echo "Check the "Interactive Quality Plot" tab in visualizations_$data/trimmed-seqs_$data.qzv in $outputDir file to know what to do on the next step."
 echo ''' 
           . .
          ( .-)-----*¨
