@@ -26,16 +26,19 @@ echo ""
 #variables
 data=$1
 metadata=$(cat ConfigFile.yml | yq '.raw.metadata' | sed 's/\"//g')
+threads=$(cat ConfigFile.yml | yq '.raw.threads' | sed 's/\"//g')
 classifier=$(cat ConfigFile.yml | yq '.taxonomy.classifier' | sed 's/\"//g')
 ref_file_taxa=$(cat ConfigFile.yml | yq '.taxonomy.ref_taxa' | sed 's/\"//g')
 ref_file_seq=$(cat ConfigFile.yml | yq '.taxonomy.ref_seq' | sed 's/\"//g')
 ref_file_taxa_origin="origin_${ref_file_taxa}"
 ref_file_seq_origin="origin_${ref_file_seq}"
-freq_tbl=$(cat ConfigFile.yml | yq '.tables.freq_tbl' | sed 's/\"//g')
-seqs_rep=$(cat ConfigFile.yml | yq '.tables.seqs_rep' | sed 's/\"//g')
+freq_tbl=$(cat ConfigFile.yml | yq '.tables.freq_wctbl' | sed 's/\"//g')
+seqs_rep=$(cat ConfigFile.yml | yq '.tables.seqs_wcrep' | sed 's/\"//g')
 prim_f=$(cat ConfigFile.yml | yq '.illumina.primer_f' | sed 's/\"//g')
 prim_r=$(cat ConfigFile.yml | yq '.illumina.primer_r' | sed 's/\"//g')
 taxo=$(cat ConfigFile.yml | yq '.taxonomy.taxo_data' | sed 's/\"//g')
+ref_file_seq=$(cat ConfigFile.yml | yq '.taxonomy.ref_seq' | sed 's/\"//g')
+ref_file_taxa=$(cat ConfigFile.yml | yq '.taxonomy.ref_taxa' | sed 's/\"//g')
 
 #check the number of arguments
 if [ $# -ne 1 ];
@@ -74,6 +77,7 @@ if [ ! -e "$seqs_rep" ];
  fi
 
 #Get SILVA database
+
 qiime rescript get-silva-data \
     --p-version '138.2' \
     --p-target 'SSURef_NR99' \
@@ -95,7 +99,7 @@ qiime rescript filter-seqs-length-by-taxon \
     --i-sequences "cleaned_$ref_file_seq_origin" \
     --i-taxonomy $ref_file_taxa_origin \
     --p-labels Archaea Bacteria Eukaryota \
-    --p-min-lens 900 1200 1400 \
+    --p-min-lens 900 1200 1000 \
     --o-filtered-seqs "filt_$ref_file_seq_origin" \
     --o-discarded-seqs "discard_$ref_file_seq_origin"
 
@@ -108,14 +112,13 @@ qiime rescript dereplicate \
     --o-dereplicated-sequences "derep_uniq_$ref_file_seq_origin" \
     --o-dereplicated-taxa "derep_uniq_$ref_file_taxa_origin"
 
-#make amplicon-region specific classifier 
-
-#extract sequences
+#make amplicon-region specific classifier
+#extract sequences 
 qiime feature-classifier extract-reads \
     --i-sequences "derep_uniq_$ref_file_seq_origin" \
     --p-f-primer $prim_f \
     --p-r-primer $prim_r \
-    --p-n-jobs 2 \
+    --p-n-jobs $threads \
     --p-read-orientation 'forward' \
     --o-reads "derep_uniq_$ref_file_seq"
 
@@ -125,7 +128,7 @@ qiime rescript dereplicate \
     --i-taxa "derep_uniq_$ref_file_taxa_origin" \
     --p-mode 'uniq' \
     --o-dereplicated-sequences $ref_file_seq \
-    --o-dereplicated-taxa  $ref_file_taxa
+    --o-dereplicated-taxa $ref_file_taxa
 
 #train feature classifier
 qiime feature-classifier fit-classifier-naive-bayes \
@@ -149,7 +152,6 @@ qiime feature-classifier classify-sklearn \
   --i-reads $seqs_rep \
   --o-classification $taxo
 
-
 qiime metadata tabulate \
   --m-input-file $taxo \
   --o-visualization ${data}_taxonomy.qzv
@@ -162,8 +164,8 @@ qiime taxa barplot \
   --o-visualization ${data}_taxa_bar_plots.qzv
 
 #organize
-mv ./*.qza artifact/
-mv ./*.qzv vizualizations
+mv ./*.qza artifact_$data/
+mv ./*.qzv vizualizations_$data/
 
 echo "Check the "${data}_taxonomy.qzv" file in qiime2 to see the confidance of the classifier of the reference file with the data"
 echo "The ${data}_taxa_bar_plots.qzv shows the taxonomic composition"
