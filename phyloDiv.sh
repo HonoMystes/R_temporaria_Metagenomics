@@ -88,6 +88,6 @@ qiime diversity alpha-rarefaction \
   --m-metadata-file $metadata \
   --o-visualization $outputDir_viz/alpha_rarefaction_curves.qzv \
   --p-min-depth 1 \
-  --p-max-depth $max_depth  #check freq_file 
+  --p-max-depth $max_depth
 
 echo "To continue diversity analysis please check the ./$outputDir_viz/alpha_rarefaction_curves.qzv file and run Div2.sh"
