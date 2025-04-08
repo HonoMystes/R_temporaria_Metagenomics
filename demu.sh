@@ -43,7 +43,7 @@ if [ $# -ne 1 ];
  fi
 
 #directories
-mkdir qualityDir
+mkdir -p qualityDir_$data
 ls $path_file/*_R1.fastq.gz > $INFILE
 
 #quality filtering the sequencies using fastp, we will use the infile created in create_manifest_file.sh
@@ -51,14 +51,16 @@ while read LINE; do
 	id=$(basename $LINE)
 	id_R2=$(basename $LINE | sed 's/_R1/_R2/g')
 	R2=$(echo $LINE | sed 's/_R1/_R2/g')
-	fastp -i $LINE -I $R2 -o ./qualityDir/out_$id -O ./qualityDir/out_$id_R2
+	fastp -i $LINE -I $R2 -h fastp_$id.html -j fastp_$id.json -o ./qualityDir_$data/out_$id -O ./qualityDir_$data/out_$id_R2 
 done < $INFILE
-
 echo "----------------"
 echo $INFILE
-
+mkdir -p fastp_reports_$data
+mv *.html fastp_reports_$data
+mv *.json fastp_reports_$data
 #make manifest file
-ls /home/ddeodato/rana/qualityDir/*_R1.fastq.gz > $INFILE_R1
+current_directory=$(pwd)
+ls $current_directory/qualityDir_$data/*_R1.fastq.gz > $INFILE_R1
 
 #header
 echo "sample-id	forward-absolute-filepath	reverse-absolute-filepath" > $manifest
@@ -82,53 +84,66 @@ if [ ! -e "$manifest" ];
    echo "$manifest file present"
  fi
 echo "---------------------------------/"
-mkdir artifact
-mkdir vizualizations
+mkdir -p artifact_$data
+mkdir -p vizualizations_$data
 
 #Importing data into artifact
 echo "Importing into artifact type"
 qiime tools import \
   --type 'SampleData[PairedEndSequencesWithQuality]' \
   --input-path $manifest \
-  --output-path artifact/$data.qza \
+  --output-path artifact_$data/$data.qza \
   --input-format PairedEndFastqManifestPhred33V2
 
 #check to see if the import worked
  #verify if the manifest file exists
-if [ ! -e "artifact/$data.qza" ];
+if [ ! -e "artifact_$data/$data.qza" ];
  then
   help
   echo "ERROR: file artifact/$data.qza  not found"
   echo "Please check if the name is correct and the file is in the current directory"
   exit 1
   else
-  echo "artifact/$data.qza file present"
+  echo "artifact_$data/$data.qza file present"
  fi
 
 #Cutting primers with cutadapt
 #cutadapt
 echo "Cutting primers with cutadapt"
 qiime cutadapt trim-paired \
-        --i-demultiplexed-sequences artifact/$data.qza \
+        --i-demultiplexed-sequences artifact_$data/$data.qza \
         --p-adapter-f $prim_f \
         --p-adapter-r $prim_r \
         --p-error-rate 0 \
-        --o-trimmed-sequences artifact/trimmed-seqs_$data.qza \
+        --o-trimmed-sequences artifact_$data/trimmed-seqs_$data.qza \
         --verbose
 
 #Summarize for vizualization
 echo "Summarizing demultiplexing"
 qiime demux summarize \
-   --i-data artifact/trimmed-seqs_$data.qza \
-   --o-visualization trimmed-seqs_$data.qzv
+   --i-data artifact_$data/trimmed-seqs_$data.qza \
+   --o-visualization vizualizations_$data/trimmed-seqs_$data.qzv
+
+if [ -d $outputDir ];
+ then
+ rm -rf $outputDir
+fi
 
 #Vizualization
 echo "Preparing visualization"
 qiime tools export \
-  --input-path trimmed-seqs_$data.qzv \
+  --input-path vizualizations_$data/trimmed-seqs_$data.qzv \
   --output-path $outputDir
 
-#organize
-mv ./*.qzv vizualizations/
+mv $INFILE_R1 $outputdir
+mv $INFILE $outputDir
 
-echo "Check the "Interactive Quality Plot" tab in trimmed-seqs_$data.qzv in $outputDir file to know what to do on the next step."
+echo "Check the "Interactive Quality Plot" tab in vizualizations_$data/trimmed-seqs_$data.qzv in $outputDir file to know what to do on the next step."
+echo ''' 
+          . .
+         ( .-)-----*¨
+      _(_|   |_)_
+
+'''
+
+
