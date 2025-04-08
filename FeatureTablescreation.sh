@@ -99,6 +99,7 @@ if [ ! -d "${data}_uchime-dn-out" ];
 
 ###Exclude Chimeras
 echo "Examining for chimeras"
+
 echo "Running de novo" 
 qiime vsearch uchime-denovo \
   --i-table $freq_tbl \
@@ -113,7 +114,7 @@ qiime metadata tabulate \
 
 qiime deblur visualize-stats \
   --i-deblur-stats artifact_$data/deblur_stats.qza \
-  --o-visualization vizualizations_$data/deblur_stats.qzv
+  --o-visualization visualizations_$data/deblur_stats.qzv
 
 #Feature tables
 qiime feature-table filter-features \
@@ -134,6 +135,6 @@ qiime feature-table summarize \
 qiime feature-table summarize \
  --i-table artifact_$data/w_chimeraPopLund_freq_table.qza \
  --m-sample-metadata-file $metadata \
- --o-visualization vizualizations_$data/w_chimeraPopLund_freq_table.qzv
+ --o-visualization visualizations_$data/w_chimeraPopLund_freq_table.qzv
 
-echo "check $freq_tbl_viz to know what to do on script phyloDiv.sh"
+echo "check visualizations_$data/w_chimeraPopLund_freq_table.qzv to know what to do on script phyloDiv.sh"
