@@ -39,8 +39,6 @@ taxo_tbl=$(cat ConfigFile.yml | yq '.tables.taxa_freq' | sed 's/\"//g')
 prim_f=$(cat ConfigFile.yml | yq '.illumina.primer_f' | sed 's/\"//g')
 prim_r=$(cat ConfigFile.yml | yq '.illumina.primer_r' | sed 's/\"//g')
 taxo=$(cat ConfigFile.yml | yq '.taxonomy.taxo_data' | sed 's/\"//g')
-ref_file_seq=$(cat ConfigFile.yml | yq '.taxonomy.ref_seq' | sed 's/\"//g')
-ref_file_taxa=$(cat ConfigFile.yml | yq '.taxonomy.ref_taxa' | sed 's/\"//g')
 
 #check the number of arguments
 if [ $# -ne 1 ];
