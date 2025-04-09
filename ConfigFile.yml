@@ -18,6 +18,8 @@ tables:
   seqs_rep: "artifact_PopLund/PopLund_rep_seqs.qza"
   seqs_wcrep: "artifact_PopLund/w_chimeraPopLund_rep_seqs.qza" 
   seqs_rep_viz: "visualizations_PopLund/PopLund_rep_seqs.qzv"
+  taxa_freq: "artifact_PopLund/freq_taxo_tbl.qza"
+  taxa_seqs: "artifact_PopLund/reps_taxo_seqs.qza"
 taxonomy:
   ref_taxa: "silva_ref_taxa.qza"
   ref_seq: "silva_ref_seqs.qza"
