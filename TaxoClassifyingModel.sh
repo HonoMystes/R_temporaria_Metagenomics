@@ -34,6 +34,8 @@ ref_file_taxa_origin="origin_${ref_file_taxa}"
 ref_file_seq_origin="origin_${ref_file_seq}"
 freq_tbl=$(cat ConfigFile.yml | yq '.tables.freq_wctbl' | sed 's/\"//g')
 seqs_rep=$(cat ConfigFile.yml | yq '.tables.seqs_wcrep' | sed 's/\"//g')
+taxo_rep=$(cat ConfigFile.yml | yq '.tables.taxa_seqs' | sed 's/\"//g')
+taxo_tbl=$(cat ConfigFile.yml | yq '.tables.taxa_freq' | sed 's/\"//g')
 prim_f=$(cat ConfigFile.yml | yq '.illumina.primer_f' | sed 's/\"//g')
 prim_r=$(cat ConfigFile.yml | yq '.illumina.primer_r' | sed 's/\"//g')
 taxo=$(cat ConfigFile.yml | yq '.taxonomy.taxo_data' | sed 's/\"//g')
@@ -141,6 +143,7 @@ qiime feature-classifier classify-sklearn \
   --i-classifier $classifier \
   --i-reads $ref_file_seq \
   --o-classification taxonomy.qza
+
 #tabulate to visualize in qiime 2
 qiime metadata tabulate \
   --m-input-file taxonomy.qza \
@@ -156,16 +159,35 @@ qiime metadata tabulate \
   --m-input-file $taxo \
   --o-visualization ${data}_taxonomy.qzv
 
+#filter tables
+qiime taxa filter-table \
+  --i-table $freq_tbl \
+  --i-taxonomy $taxo \
+  --p-mode contains \
+  --p-include p__ \
+  --p-exclude 'p__;,Chloroplast,Mitochondria' \
+  --o-filtered-table $taxo_tbl
+
+qiime feature-table filter-seqs \
+  --i-data $seqs_rep \
+  --i-table $taxo_tbl \
+  --o-filtered-data $taxo_rep
+
+qiime feature-table summarize \
+  --i-table $taxo_tbl \
+  --m-sample-metadata-file $metadata\
+  --o-visualization visualizations_$data/taxa_frq_tbl.qzv
+
 #barplot to observe taxonomy in our data
 qiime taxa barplot \
-  --i-table $freq_tbl \
+  --i-table $taxo_tbl \
   --i-taxonomy $taxo \
   --m-metadata-file $metadata \
   --o-visualization ${data}_taxa_bar_plots.qzv
 
 #organize
 mv ./*.qza artifact_$data/
-mv ./*.qzv vizualizations_$data/
+mv ./*.qzv visualizations_$data/
 
 echo "Check the "${data}_taxonomy.qzv" file in qiime2 to see the confidance of the classifier of the reference file with the data"
 echo "The ${data}_taxa_bar_plots.qzv shows the taxonomic composition"
