@@ -1,6 +1,6 @@
 #!/bin/bash
 #This is the forth part of the metagenomic analysis of my thesis, using qiime2
-#This script will make the phylogeny analysis and the first part of the diversity analysis
+#This script will make the phylogeny analysis and the alpha rarefaction plot
 # the < | sed 's/\"//g'> is needed since the qiime enviroment adds ""
 #Copywrite Daniela Deodato, January 2025
 
@@ -18,8 +18,8 @@ echo ""
 #variables
 data=$1
 metadata=$(cat ConfigFile.yml | yq '.raw.metadata' | sed 's/\"//g')
-seqs_rep=$(cat ConfigFile.yml | yq '.tables.seqs_wcrep' | sed 's/\"//g')
-freq_tbl=$(cat ConfigFile.yml | yq '.tables.freq_wctbl' | sed 's/\"//g')
+seqs_rep=$(cat ConfigFile.yml | yq '.tables.taxa_seqs' | sed 's/\"//g')
+freq_tbl=$(cat ConfigFile.yml | yq '.tables.taxa_freq' | sed 's/\"//g')
 max_depth=$(cat ConfigFile.yml | yq '.diversity.max_depth' | sed 's/\"//g')
 outputDir_viz=$(cat ConfigFile.yml | yq '.directory_name.viz_dir_div' | sed 's/\"//g')
 
