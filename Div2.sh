@@ -18,7 +18,7 @@ echo ""
 #variables
 data=$1
 metadata=$(cat ConfigFile.yml | yq '.raw.metadata' | sed 's/\"//g')
-freq_tbl=$(cat ConfigFile.yml | yq '.tables.freq_wctbl' | sed 's/\"//g')
+freq_tbl=$(cat ConfigFile.yml | yq '.tables.taxa_freq' | sed 's/\"//g')
 raref_cap=$(cat ConfigFile.yml | yq '.diversity.raref_cap' | sed 's/\"//g')
 outputDir_viz=$(cat ConfigFile.yml | yq '.directory_name.viz_dir_div' | sed 's/\"//g')
 
@@ -123,7 +123,7 @@ qiime emperor plot \
   --i-pcoa diversity_core_metrics/unweighted_unifrac_pcoa_results.qza \
   --m-metadata-file $metadata \
   --o-visualization $outputDir_viz/unifrac_emperor.qzv
-  
+
 qiime emperor plot \
   --i-pcoa diversity_core_metrics/bray_curtis_pcoa_results.qza \
   --m-metadata-file $metadata \
