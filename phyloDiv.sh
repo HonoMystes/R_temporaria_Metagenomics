@@ -21,6 +21,8 @@ metadata=$(cat ConfigFile.yml | yq '.raw.metadata' | sed 's/\"//g')
 seqs_rep=$(cat ConfigFile.yml | yq '.tables.taxa_seqs' | sed 's/\"//g')
 freq_tbl=$(cat ConfigFile.yml | yq '.tables.taxa_freq' | sed 's/\"//g')
 max_depth=$(cat ConfigFile.yml | yq '.diversity.max_depth' | sed 's/\"//g')
+artifact=$(cat ConfigFile.yml | yq '.directory_name.artifact' | sed 's/\"//g')
+phylogeny=$(cat ConfigFile.yml | yq '.directory_name.phylogeny' | sed 's/\"//g')
 outputDir_viz=$(cat ConfigFile.yml | yq '.directory_name.viz_dir_div' | sed 's/\"//g')
 
 #Possible errors
@@ -43,33 +45,33 @@ if [ ! -e "$metadata" ];
  fi
 
 #check if frequency table exists
-if [ ! -e "$freq_tbl" ];
+if [ ! -e "$arifact/$freq_tbl" ];
  then
   help
-  echo "ERROR: file $freq_tbl not found"
+  echo "ERROR: file $arifact/$freq_tbl not found"
   echo "Please check if the name is correct and the file is in the current directory"
   exit 1
  fi
 
 #check if representative sequences table exists
-if [ ! -e "$seqs_rep" ];
+if [ ! -e "$arifact/$seqs_rep" ];
  then
   help
-  echo "ERROR: file $seqs_rep not found"
+  echo "ERROR: file $arifact/$seqs_rep not found"
   echo "Please check if the name is correct and the file is in the current directory"
   exit 1
  fi
 
 qiime phylogeny align-to-tree-mafft-fasttree \
-	--i-sequences $seqs_rep \
+	--i-sequences $arifact/$seqs_rep \
 	--o-alignment aligned-rep-seqs.qza \
 	--o-masked-alignment masked-aligned-rep-seqs.qza \
 	--o-tree unrooted-tree.qza \
 	--o-rooted-tree tree.qza
 
-mkdir -p phylogeny_$data
-mv *aligned* ./phylogeny_$data
-mv *tree* ./phylogeny_$data
+mkdir -p $phylogeny
+mv *aligned* ./$phylogeny
+mv *tree* ./$phylogeny
 
 #alpha diversity see parkinson's mouse
 if [ -e $outputDir_viz ];
@@ -84,7 +86,7 @@ fi
 
 #rarefraction
 qiime diversity alpha-rarefaction \
-  --i-table $freq_tbl \
+  --i-table $arifact/$freq_tbl \
   --m-metadata-file $metadata \
   --o-visualization $outputDir_viz/alpha_rarefaction_curves.qzv \
   --p-min-depth 1 \
