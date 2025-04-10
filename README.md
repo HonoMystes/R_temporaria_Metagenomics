@@ -89,8 +89,27 @@ Outputs:
 
 ---
 ## Usage
-Before starting the analysis remember to activate de qiime2 amplicon enviroment
+Before starting the analysis remember to activate de qiime2 amplicon enviroment.
 
+Uptade the ConfigFile.yml to your desire and then the analysis by start with running the *demu.sh* script:
+
+`demu.sh PopLund `
+
+After analyzing the output *trimmed-seqs_PopLund.qzv* the denoise section of the configuration file is altered for our deseired values of minimum number of sequences per sample and truncation value for the right cut of the sequences. The *FeatureTablecreation.sh* is next:
+
+`FeatureTablecreation.sh PopLund`
+
+With the feature tables created we then performe the taxonomic analysis by running the command:
+
+`TaxoClassifyingModel.sh PopLund`
+
+To start the diversity analysis we must first perform the phylogeny analysis and the alpha rarefraction curve. That is done by running the command:
+
+`phyloDiv.sh PopLund`
+
+The last script to run will perform the alpha and beta diverity analysis as well as the differential abundance analysis with the command:
+
+`Div2.sh PopLund`
 
 ---
 ## Citations
