@@ -18,18 +18,20 @@ echo ""
 
 #Variables
 data=$1 #name of the directory with the samples
-cutadapt_file_art=artifact_$data/trimmed-seqs_$data.qza
+cutadapt_file_art=$artifact/trimmed-seqs_$data.qza
 metadata=$(cat ConfigFile.yml | yq '.raw.metadata' | sed 's/\"//g')
 threads=$(cat ConfigFile.yml | yq '.raw.threads' | sed 's/\"//g')
-num_min_seq=$(cat ConfigFile.yml | yq '.size.num_min_seq' | sed 's/\"//g')
-length=$(cat ConfigFile.yml | yq '.trim.length' | sed 's/\"//g')
+num_min_seq=$(cat ConfigFile.yml | yq '.denoise.num_min_seq' | sed 's/\"//g')
+length=$(cat ConfigFile.yml | yq '.denoise.length' | sed 's/\"//g')
 outputDir=$(cat ConfigFile.yml | yq '.directory_name.output_dir_cutadapt' | sed 's/\"//g')
+artifact=$(cat ConfigFile.yml | yq '.directory_name.artifact' | sed 's/\"//g')
+visualizations=$(cat ConfigFile.yml | yq '.directory_name.visualizations' | sed 's/\"//g')
 persample=${outputDir}per-sample-fastq-counts.tsv
 freq_tbl=$(cat ConfigFile.yml | yq '.tables.freq_tbl' | sed 's/\"//g')
 freq_tbl_viz=$(cat ConfigFile.yml | yq '.tables.freq_tbl_viz' | sed 's/\"//g')
 seqs_rep=$(cat ConfigFile.yml | yq '.tables.seqs_rep' | sed 's/\"//g')
 seqs_rep_viz=$(cat ConfigFile.yml | yq '.tables.seqs_rep_viz' | sed 's/\"//g')
-fil=artifact_$data/filter.qza
+fil=$artifact/filter.qza
 
 #Possible errors
 #check the number of arguments
@@ -75,10 +77,10 @@ echo "pass filter_sample"
 qiime deblur denoise-16S \
   --i-demultiplexed-seqs $fil \
   --p-trim-length $length \
-  --o-representative-sequences $seqs_rep \
-  --o-table $freq_tbl \
+  --o-representative-sequences $artifact/$seqs_rep \
+  --o-table $artifact/$freq_tbl \
   --p-sample-stats \
-  --o-stats artifact_$data/deblur_stats.qza \
+  --o-stats $artifact/deblur_stats.qza \
   --p-jobs-to-start $threads
 
 echo "pass denoising"
@@ -102,8 +104,8 @@ echo "Examining for chimeras"
 
 echo "Running de novo" 
 qiime vsearch uchime-denovo \
-  --i-table $freq_tbl \
-  --i-sequences $seqs_rep \
+  --i-table $artifact/$freq_tbl \
+  --i-sequences $artifact/$seqs_rep \
   --output-dir ${data}_uchime-dn-out
 
 echo "pass chimera"
@@ -113,28 +115,28 @@ qiime metadata tabulate \
   --o-visualization ${data}_uchime-dn-out/stats.qzv
 
 qiime deblur visualize-stats \
-  --i-deblur-stats artifact_$data/deblur_stats.qza \
-  --o-visualization visualizations_$data/deblur_stats.qzv
+  --i-deblur-stats $artifact/deblur_stats.qza \
+  --o-visualization $visualizations/deblur_stats.qzv
 
 #Feature tables
 qiime feature-table filter-features \
-  --i-table $freq_tbl \
+  --i-table $artifact/$freq_tbl \
   --m-metadata-file ${data}_uchime-dn-out/nonchimeras.qza \
-  --o-filtered-table artifact_$data/w_chimeraPopLund_freq_table.qza
+  --o-filtered-table $artifact/w_chimeraPopLund_freq_table.qza
 
 qiime feature-table filter-seqs \
-  --i-data $seqs_rep \
+  --i-data $artifact/$seqs_rep \
   --m-metadata-file ${data}_uchime-dn-out/nonchimeras.qza \
-  --o-filtered-data artifact_$data/w_chimeraPopLund_rep_seqs.qza
+  --o-filtered-data $artifact/w_chimeraPopLund_rep_seqs.qza
 
 qiime feature-table summarize \
-  --i-table $freq_tbl \
+  --i-table $artifact/$freq_tbl \
   --m-sample-metadata-file $metadata \
-  --o-visualization $freq_tbl_viz
+  --o-visualization $visualization/$freq_tbl_viz
 
 qiime feature-table summarize \
- --i-table artifact_$data/w_chimeraPopLund_freq_table.qza \
+ --i-table $artifact/w_chimeraPopLund_freq_table.qza \
  --m-sample-metadata-file $metadata \
- --o-visualization visualizations_$data/w_chimeraPopLund_freq_table.qzv
+ --o-visualization $visualizations/w_chimeraPopLund_freq_table.qzv
 
-echo "check visualizations_$data/w_chimeraPopLund_freq_table.qzv to know what to do on script phyloDiv.sh"
+echo "check $visualizations/w_chimeraPopLund_freq_table.qzv to know what to do on script phyloDiv.sh"
