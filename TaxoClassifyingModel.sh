@@ -28,10 +28,6 @@ data=$1
 metadata=$(cat ConfigFile.yml | yq '.raw.metadata' | sed 's/\"//g')
 threads=$(cat ConfigFile.yml | yq '.raw.threads' | sed 's/\"//g')
 classifier=$(cat ConfigFile.yml | yq '.taxonomy.classifier' | sed 's/\"//g')
-ref_file_taxa=$(cat ConfigFile.yml | yq '.taxonomy.ref_taxa' | sed 's/\"//g')
-ref_file_seq=$(cat ConfigFile.yml | yq '.taxonomy.ref_seq' | sed 's/\"//g')
-ref_file_taxa_origin="origin_${ref_file_taxa}"
-ref_file_seq_origin="origin_${ref_file_seq}"
 freq_tbl=$(cat ConfigFile.yml | yq '.tables.freq_wctbl' | sed 's/\"//g')
 seqs_rep=$(cat ConfigFile.yml | yq '.tables.seqs_wcrep' | sed 's/\"//g')
 taxo_rep=$(cat ConfigFile.yml | yq '.tables.taxa_seqs' | sed 's/\"//g')
@@ -39,6 +35,10 @@ taxo_tbl=$(cat ConfigFile.yml | yq '.tables.taxa_freq' | sed 's/\"//g')
 prim_f=$(cat ConfigFile.yml | yq '.illumina.primer_f' | sed 's/\"//g')
 prim_r=$(cat ConfigFile.yml | yq '.illumina.primer_r' | sed 's/\"//g')
 taxo=$(cat ConfigFile.yml | yq '.taxonomy.taxo_data' | sed 's/\"//g')
+ref_file_taxa="silva_ref_taxa.qza"
+ref_file_seq="silva_ref_seqs.qza"
+ref_file_taxa_origin="origin_${ref_file_taxa}"
+ref_file_seq_origin="origin_${ref_file_seq}"
 
 #check the number of arguments
 if [ $# -ne 1 ];
@@ -59,19 +59,19 @@ if [ ! -e "$metadata" ];
  fi
 
 #check if frequency table exists
-if [ ! -e "$freq_tbl" ];
+if [ ! -e "$arifact/$freq_tbl" ];
  then
   help
-  echo "ERROR: file $freq_tbl not found"
+  echo "ERROR: file $arifact/$freq_tbl not found"
   echo "Please check if the name is correct and the file is in the current directory"
   exit 1
  fi
 
 #check if representative sequences table exists
-if [ ! -e "$seqs_rep" ];
+if [ ! -e "$arifact/$seqs_rep" ];
  then
   help
-  echo "ERROR: file $seqs_rep not found"
+  echo "ERROR: file $arifact/$seqs_rep not found"
   echo "Please check if the name is correct and the file is in the current directory"
   exit 1
  fi
@@ -134,11 +134,11 @@ qiime rescript dereplicate \
 qiime feature-classifier fit-classifier-naive-bayes \
     --i-reference-reads $ref_file_seq \
     --i-reference-taxonomy $ref_file_taxa \
-    --o-classifier $classifier
+    --o-classifier $artifact/$classifier
 
 #test classifier
 qiime feature-classifier classify-sklearn \
-  --i-classifier $classifier \
+  --i-classifier $artifact/$classifier \
   --i-reads $ref_file_seq \
   --o-classification taxonomy.qza
 
@@ -150,46 +150,46 @@ qiime metadata tabulate \
 #apply classifier to our data
 qiime feature-classifier classify-sklearn \
   --i-classifier $classifier \
-  --i-reads $seqs_rep \
-  --o-classification $taxo
+  --i-reads $artifact/$seqs_rep \
+  --o-classification $artifact/$taxo
 
 qiime metadata tabulate \
-  --m-input-file $taxo \
+  --m-input-file $artifact/$taxo \
   --o-visualization ${data}_taxonomy.qzv
 
 #filter tables
 qiime taxa filter-table \
-  --i-table $freq_tbl \
-  --i-taxonomy $taxo \
+  --i-table $artifact/$freq_tbl \
+  --i-taxonomy $artifact/$taxo \
   --p-mode contains \
   --p-include p__ \
   --p-exclude 'p__;,Chloroplast,Mitochondria' \
-  --o-filtered-table $taxo_tbl
+  --o-filtered-table $artifact/$taxo_tbl
 
 qiime feature-table filter-seqs \
-  --i-data $seqs_rep \
-  --i-table $taxo_tbl \
-  --o-filtered-data $taxo_rep
+  --i-data $artifact/$seqs_rep \
+  --i-table $artifact/$taxo_tbl \
+  --o-filtered-data $artifact/$taxo_rep
 
 qiime feature-table summarize \
-  --i-table $taxo_tbl \
+  --i-table $artifact/$taxo_tbl \
   --m-sample-metadata-file $metadata\
-  --o-visualization visualizations_$data/taxa_frq_tbl.qzv
+  --o-visualization $visualizations/taxa_frq_tbl.qzv
 
 #barplot to observe taxonomy in our data
 qiime taxa barplot \
-  --i-table $taxo_tbl \
-  --i-taxonomy $taxo \
+  --i-table $artifact/$taxo_tbl \
+  --i-taxonomy $artifact/$taxo \
   --m-metadata-file $metadata \
   --o-visualization ${data}_taxa_bar_plots.qzv
 
 #organize
-mv ./*.qza artifact_$data/
-mv ./*.qzv visualizations_$data/
+mv ./*.qza $artifact/
+mv ./*.qzv $visualizations/
 
 echo "Check the "${data}_taxonomy.qzv" file in qiime2 to see the confidance of the classifier of the reference file with the data"
 echo "The ${data}_taxa_bar_plots.qzv shows the taxonomic composition"
-echo "The classifying model is $classifier"
+echo "The classifying model is $artifact/$classifier"
 
 #train the sample classifier for the prevision model
 #backburner por enquanto
