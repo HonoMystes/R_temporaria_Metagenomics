@@ -20,6 +20,8 @@ data=$1
 metadata=$(cat ConfigFile.yml | yq '.raw.metadata' | sed 's/\"//g')
 freq_tbl=$(cat ConfigFile.yml | yq '.tables.taxa_freq' | sed 's/\"//g')
 raref_cap=$(cat ConfigFile.yml | yq '.diversity.raref_cap' | sed 's/\"//g')
+artifact=$(cat ConfigFile.yml | yq '.directory_name.artifact' | sed 's/\"//g')
+phylogeny=$(cat ConfigFile.yml | yq '.directory_name.phylogeny' | sed 's/\"//g')
 outputDir_viz=$(cat ConfigFile.yml | yq '.directory_name.viz_dir_div' | sed 's/\"//g')
 
 #Possible errors
@@ -64,14 +66,14 @@ fi
 if [ ! -e "$freq_tbl" ];
  then
   help
-  echo "ERROR: file $freq_tbl not found"
+  echo "ERROR: file $artifact/$freq_tbl not found"
   echo "Please check if the name is correct and the file is in the current directory"
   exit 1
  fi
 
 qiime diversity core-metrics-phylogenetic \
-  --i-table $freq_tbl \
-  --i-phylogeny ./phylogeny_$data/tree.qza \
+  --i-table $artifact/$freq_tbl \
+  --i-phylogeny $phylogeny/tree.qza \
   --m-metadata-file $metadata \
   --p-sampling-depth $raref_cap \
   --output-dir ./diversity_core_metrics
@@ -118,60 +120,48 @@ qiime diversity beta-group-significance \
   --m-metadata-column diet \
   --o-visualization $outputDir_viz/weighted_unifrac_diet_significance.qzv
 
-#emperor plots
-qiime emperor plot \
-  --i-pcoa diversity_core_metrics/unweighted_unifrac_pcoa_results.qza \
-  --m-metadata-file $metadata \
-  --o-visualization $outputDir_viz/unifrac_emperor.qzv
-
-qiime emperor plot \
-  --i-pcoa diversity_core_metrics/bray_curtis_pcoa_results.qza \
-  --m-metadata-file $metadata \
-  --o-visualization $outputDir_viz/bray_curtis_emperor.qzv
-
-
 echo "Starting the Differential Abundance"
 #diferential abundance
 qiime feature-table filter-features \
-  --i-table $freq_tbl \
+  --i-table $artifact/$freq_tbl \
   --p-min-frequency 50 \
   --p-min-samples 4 \
-  --o-filtered-table artifact_$data/table_abund.qza
+  --o-filtered-table $artifact/table_abund.qza
 
 #searching for differencies in the gut microbiome between temp and diet
 qiime composition ancombc \
-  --i-table artifact_$data/table_abund.qza \
+  --i-table $artifact/table_abund.qza \
   --m-metadata-file $metadata \
   --p-formula 'diet' \
   --p-prv-cut 0 \
-  --o-differentials artifact_$data/ancombc_diet.qza
+  --o-differentials $artifact/ancombc_diet.qza
 
 qiime composition da-barplot \
-  --i-data artifact_$data/ancombc_diet.qza \
+  --i-data $artifact/ancombc_diet.qza \
   --p-significance-threshold 0.001 \
   --o-visualization $outputDir_viz/da_barplot_diet.qzv
 
 qiime composition ancombc \
-  --i-table artifact_$data/table_abund.qza \
+  --i-table $artifact/table_abund.qza \
   --m-metadata-file $metadata \
   --p-formula 'temp' \
   --p-prv-cut 0 \
-  --o-differentials artifact_$data/ancombc_temp.qza
+  --o-differentials $artifact/ancombc_temp.qza
 
 qiime composition da-barplot \
-  --i-data artifact_$data/ancombc_temp.qza \
+  --i-data $artifact/ancombc_temp.qza \
   --p-significance-threshold 0.001 \
   --o-visualization $outputDir_viz/da_barplot_temp.qzv
 
 qiime composition ancombc \
-  --i-table artifact_$data/table_abund.qza \
+  --i-table $artifact/table_abund.qza \
   --m-metadata-file $metadata \
   --p-formula 'diet + temp' \
   --p-prv-cut 0 \
-  --o-differentials artifact_$data/ancombc_diet_temp.qza
+  --o-differentials $artifact/ancombc_diet_temp.qza
 
 qiime composition da-barplot \
-  --i-data artifact_$data/ancombc_diet_temp.qza \
+  --i-data $artifact/ancombc_diet_temp.qza \
   --p-significance-threshold 0.001 \
   --o-visualization $outputDir_viz/da_barplot_diet_temp.qzv
 
