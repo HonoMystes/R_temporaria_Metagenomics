@@ -1,34 +1,36 @@
 ---
 raw:
-  data_directory: "/scratch/FPM/frogs_metagenomics/01-raw_data/Rana_temporaria"
-  metadata: "./safe/metadata_PopLund.tsv"
-  manifest: "manifest.tsv"
+  data_directory: "/scratch/FPM/frogs_metagenomics/01-raw_data/Rana_temporaria" #complete path to our sequences
+  metadata: "./safe/metadata_PopLund.tsv" #path or name of the metadata file
+  manifest: "manifest.tsv" #name of the manifest file
   threads: 24 #number of cores to run the code
-size:
-  num_min_seq: 281 #minimum number of sequences per sample
-trim:  
-  length: 300 #change values for the right cut of the reverse seq
 directory_name:
-  output_dir_cutadapt: "./cutadapt_PopLund/" #name of the directory after cutting the primers
-  viz_dir_div: "./diversity_results_viz_PopLund/"
-tables:
-  freq_tbl: "artifact_PopLund/PopLund_freq_table.qza"
-  freq_tbl_viz: "visualizations_PopLund/PopLund_freq_table.qzv"
-  freq_wctbl: "artifact_PopLund/w_chimeraPopLund_freq_table.qza"
-  seqs_rep: "artifact_PopLund/PopLund_rep_seqs.qza"
-  seqs_wcrep: "artifact_PopLund/w_chimeraPopLund_rep_seqs.qza" 
-  seqs_rep_viz: "visualizations_PopLund/PopLund_rep_seqs.qzv"
-  taxa_freq: "artifact_PopLund/freq_taxo_tbl.qza"
-  taxa_seqs: "artifact_PopLund/reps_taxo_seqs.qza"
-taxonomy:
-  ref_taxa: "silva_ref_taxa.qza"
-  ref_seq: "silva_ref_seqs.qza"
-  classifier: "artifact_PopLund/silva_16S_classifier.qza"
-  taxo_data: "artifact_PopLund/PopLund_taxonomy.qza"
+  output_dir_cutadapt: "cutadapt_PopLund/" #name of the directory after cutting the primers
+  quality: "qualityDir_PopLund" #name of the directory of the outputs of the fastp programm
+  fastp: "fastp_reports_PopLund" #name of the directory of the reports from the fastp programm
+  artifact: "arifact_PopLund" #name of the directory for the artifacts
+  visualizations: "visualizations_PopLund" #name of the directory for the visualizations, not including the diversity results
+  phylogeny: "phylogeny_PopLund" #name of the directory for the outputs generated after performing the phylogeny analysis
+  viz_dir_div: "diversity_results_viz_PopLund" #name of the directory for the visualizations of the diversity results
 illumina:
-  primer_f: "CCTACGGGNGGCWGCAG"
-  primer_r: "GACTACHVGGGTATCTAATCC"
+  primer_f: "CCTACGGGNGGCWGCAG" #forward primer
+  primer_r: "GACTACHVGGGTATCTAATCC" #reverse primer
+denoise:
+  num_min_seq: 281 #minimum number of sequences per sample
+  length: 300 #truncation values for the right cut of the sequences 
+tables:
+  freq_tbl: "PopLund_freq_table.qza" #tables obtained from denoising
+  freq_tbl_viz: "PopLund_freq_table.qzv" #visualization of the frequnecy table obtained from denoising
+  seqs_rep: "PopLund_rep_seqs.qza" #tables obtained from denoising
+  seqs_rep_viz: "PopLund_rep_seqs.qzv" #visualization of the representative sequeces obtained from denoising
+  freq_wctbl: "w_chimeraPopLund_freq_table.qza" #tables obtained from filtering of chimeras
+  seqs_wcrep: "w_chimeraPopLund_rep_seqs.qza" #tables obtained from filtering of chimeras
+  taxa_freq: "freq_taxo_tbl.qza" #tables obtained from filtering by taxa
+  taxa_seqs: "reps_taxo_seqs.qza" #tables obtained from filtering by taxa
+taxonomy:
+  classifier: "artifact_PopLund/silva_16S_classifier.qza" #name of the classifier created from the silva database and adapted to our primers
+  taxo_data: "artifact_PopLund/PopLund_taxonomy.qza" #taxonomy file created from our classifier and data 
 diversity:
-  max_depth: 1230 #check maximum frequency in freq_table
+  max_depth: 1230 #check maximum frequency in freq_table obtained after the filtrating with the taxonomy file
   raref_cap: 200 #see where in the alpha rarefraction it stabilizes
 ...
