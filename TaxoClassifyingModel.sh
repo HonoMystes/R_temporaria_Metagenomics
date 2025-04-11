@@ -6,7 +6,7 @@
 #It uses the metadata file, the frequencies and the sequencies tables obtained in the previous script
 #The resulting output is the taxonomy of our data 
 # the < | sed 's/\"//g'> is needed since the qiime enviroment adds ""
-##Copywrite Daniela Deodato, January 2025
+##Copyright Daniela Deodato, January 2025
 
 #stops if error
 set -e
