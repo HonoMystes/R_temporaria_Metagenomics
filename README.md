@@ -115,4 +115,4 @@ The last script to run will perform the alpha and beta diverity analysis as well
 ## Citations
 
 
-Copywrite Daniela Deodato year 2025.
+Copyright Daniela Deodato year 2025.
