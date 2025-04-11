@@ -121,7 +121,8 @@ Before starting the analysis remember to download and activate de [qiime2](https
 
 `conda activate qiime2-amplicon-2024.10`
 
-Uptade the ConfigFile.yml to your desire and then the analysis by start with running the *demu.sh* script:
+Uptade the ConfigFile.yml to your desire and then the analysis by start with running the *demu.sh* script:\
+As pointed out above the "PopLund" argument refers to the population name in study and must also be edited in the configuration file to your preference.
 
 `demu.sh PopLund `
 
