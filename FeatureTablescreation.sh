@@ -3,7 +3,7 @@
 #After cuting the primers and analysing the "interactive Quality Plot" in the file trimmed-seqs_{$data}.qzv the perfered numbers in the configuration file are edited.
 #The script runs with the argument of the name of the population
 # the < | sed 's/\"//g'> is needed since the qiime enviroment adds ""
-#Copywrite Daniela Deodato, January 2025
+#Copyright Daniela Deodato, January 2025
 
 #stops if error
 set -e
