@@ -1,4 +1,27 @@
 # R_temporaria_Metagenomics
+## Table of Contents
+1. [Installing](#installing)
+2. [Configuration File](#configuration-file)
+3. [Scripts](#scripts)
+    - [demu.sh](#demush)
+        - [Inputs](#inputs)
+        - [Outputs](#outputs)
+    - [FeatureTablecreate](#featuretablecreationsh)
+        - [Inputs](#inputs-1)
+        - [Outputs](#outputs-1)
+    - [TaxoClassifyingModel.sh](#taxoclassifyingmodelsh)
+        - [Inputs](#inputs-2)
+        - [Outputs](#outputs-2)
+    - [phyloDiv.sh](#phylodivsh)
+        - [Inputs](#inputs-3)
+        - [Outputs](#outputs-3)
+    - [Div2.sh](#div2sh)
+        - [Inputs](#inputs-4)
+        - [Outputs](#outputs-4)
+4. [Usage](#usage)
+5. [Citations](#citations)
+
+
 ## Installing
 
 ---
