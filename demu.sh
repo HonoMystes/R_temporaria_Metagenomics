@@ -5,7 +5,7 @@
 #The primers sequencies and output directory name are taken from de ConfigFile.yml
 #The name of this population will be used as the argument
 # the < | sed 's/\"//g'> is needed since the qiime enviroment adds ""
-#Copywrite Daniela Deodato, January 2025
+#Copyright Daniela Deodato, January 2025
 
 #stops if error
 set -e
