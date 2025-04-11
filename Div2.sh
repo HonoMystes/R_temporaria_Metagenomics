@@ -2,7 +2,7 @@
 #This is the fifth part of the metagenomic analysis of my thesis, using qiime2
 #This script will make the diversity analysis after analysing the alpha rarefraction in ./$outputDir_viz/alpha_rarefaction_curves.qzv
 # the < | sed 's/\"//g'> is needed since the qiime enviroment adds ""
-#Copywrite Daniela Deodato, January 2025
+#Copyright Daniela Deodato, January 2025
 
 #stops if error
 set -e
