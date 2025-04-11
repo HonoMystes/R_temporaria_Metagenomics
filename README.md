@@ -38,11 +38,10 @@ The file is divided into 7 categories:
 - Finally, the diversity section contains the parameters of the maximum frequency (see taxonomy filtred frequency table) and the rarefraction depth where the alpha rarefraction stabilizes (see alpha rarefraction curve file).
 ---
 ## Scripts
-Scripts used for my thesis project on the metagenomic analysis of Rana temporaria gut microbiota.
-
 The raw used are demultiplexed paired-end fastq.gz files all in one directory. 
-The fastq.gz files must be in one of these formats: sample_name_R1.fastq.gz / sample_name_R2.fastq.gz
-The .qza files are artifact files and .qzv are visualization files of the software QIIME2 used in this code.The visualization files can be viewed in QIIME View.
+The fastq.gz files must be in one of these formats: sample_name_R1.fastq.gz / sample_name_R2.fastq.gz\
+The .qza files are artifact files and .qzv are visualization files of the software QIIME2 used in this code.\
+The visualization files can be viewed in [QIIME View](https://view.qiime2.org/).
 
 At the moment the current scripts and files are:
 ### demu.sh
