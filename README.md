@@ -23,13 +23,13 @@ The .qza files are artifact files and .qzv are visualization files of the softwa
 
 At the moment the current scripts and files are:
 ### demu.sh
-The *demu.sh* script will perform the quality control of our samples using the fastp command the resulting path to that out put will be used in the creation of a manifest file (.tsv file) to start importing the demultiplexed and quality checked sequences into artifact type using the tsv file created and cutting the primers with cutadapt.
+The *demu.sh* script will perform the quality control of our samples using the [fastp](https://github.com/OpenGene/fastp?tab=readme-ov-file#quality-filter) command the resulting path to that out put will be used in the creation of a manifest file (.tsv file) to start importing the demultiplexed and quality checked sequences into artifact type using the tsv file created and cutting the primers with cutadapt.
 
-Inputs: 
+#### Inputs: 
 - Population name (argument);
 - In the Configuration file alter the: path to the samples, the name for the manifest file, the name of the directories (cutadapt, artifact, visualizations, quality and fastp), primers sequences and number of threads to be used.
 
-Outputs: 
+#### Outputs: 
 - Fastp outputs (.fastq.gz);
 - Manifest file (.tsv);
 - demultiplexed samples artifact (.qza);
@@ -38,11 +38,11 @@ Outputs:
 ### FeatureTablecreation.sh
 The *FeatureTablecreation.sh* script uses the trimmed artifact file generated in the script above to filter, denoise (using deblur) our data as well as filtering out chimeras and create de feature tables (frequency and representative sequences) with and without filtering the chimeras to be later filtred by the taxonomy file.
 
-Inputs:
+#### Inputs:
 - Population name (argument);
 - In the Configuration file alter the: metadata path, number of cores to be used, the minimum number of sequences per sample, the truncation value for the right cut of the sequences and the feature tables names (with an without chimeras) both artifacts and visualizations.
 
-Outputs:
+#### Outputs:
 - Feature Tables (frequency table and representative sequences) with and without chimeras (.qza);
 - Deblur stats, visualization and artifact files (.qzv and .qza);
 - Chimeras examination (Vsearch uchime-denovo) stats visualization and artfact files(.qzv and .qza). 
@@ -50,11 +50,11 @@ Outputs:
 ### TaxoClassifyingModel.sh
 The *TaxoClassifyingModel.sh* script trains the classifing model specific of the 16S for the taxonomy using the SILVA database and creates the taxonomy of our data, the taxonomy file is later used to filter the feature tables. For better analysis the taxonomy results can be visualized by aid of a bar plot.
 
-Inputs:
+#### Inputs:
 - Population name (argument);
 - In the Configuration file alter the: metadata path, number of cores to be used, the primers (must be the same ones used in the *demu.sh*), the name of the chimera filtred feature tables in artifact type (must be the same ones created in *FeatureTablecreation.sh*) and name of the classifier and the taxonomy file.
 
-Outputs:
+#### Outputs:
 - Silva database outputs for the creation of the classifier (.qza);
 - Classifier (.qza);
 - Taxonomy file (.qza);
@@ -64,11 +64,11 @@ Outputs:
 ### phyloDiv.sh
 The *phyloDiv.sh* performs the phylogeny and alpha rarefractrion analysis.
 
-Inputs:
+#### Inputs:
 - Population name (argument);
 - In the Configuration file alter the: name of the feature tables (frequecy and representative sequences) artifact files filtred by taxonomy, maximum depth value(the value is chosen by observing the taxonomy filtred frequency table number of maximum frequency. e.g: the maximum frequency=4996 then maximum depth=4230), name of the phylogeny directory and the diversity visualizations directory. 
 
-Outputs:
+#### Outputs:
 - Aligned sequence (.qza);
 - Masked aligned sequences (.qza);
 - Rooted and unrooted tree (.qza);
@@ -77,11 +77,11 @@ Outputs:
 ### Div2.sh
 The *Div2.sh* script performes the alpha and beta diversity analysis after determining the rarefraction curve with the vizualization output created above it also performes the differential analysis of the abundance in our data.
 
-Inputs:
+#### Inputs:
 - Population name (argument);
 - In the Configuration file alter the: metadata file path, name of the feature tables (frequecy and representative sequences) artifact files filtred by taxonomy and the number of rarefraction depth
 
-Outputs:
+#### Outputs:
 - Diversity core metrics based on phylogeny (.qza and .qzv);
 - Alpha diversity statistics (eveness, faith_pd and anova faith_pd) (.qzv);
 - Beta diversity statistics (weighted and unweighted unifraq siginificances) (.qzv);
@@ -89,7 +89,15 @@ Outputs:
 
 ---
 ## Usage
-Before starting the analysis remember to activate de qiime2 amplicon enviroment.
+Before starting the analysis remember to download and activate de [qiime2](https://docs.qiime2.org/2024.10/) amplicon enviroment.
+
+`conda update conda`
+
+`wget -O "https://data.qiime2.org/distro/amplicon/qiime2-amplicon-2024.10-py310-linux-conda.yml"`
+
+`conda env create -n qiime2-amplicon-2024.10 --file https://data.qiime2.org/distro/amplicon/qiime2-amplicon-2024.10-py310-linux-conda.yml`
+
+`conda activate qiime2-amplicon-2024.10`
 
 Uptade the ConfigFile.yml to your desire and then the analysis by start with running the *demu.sh* script:
 
