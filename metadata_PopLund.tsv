@@ -1,6 +1,5 @@
-﻿sampleid	temp	box	diet	P	larval period	w_46
+sampleid	temp	box	diet	P	larval period	w_46
 #q2:types	categorical	categorical	categorical	categorical	numeric	numeric
-001A0	20	1	A	0	34	0.29438
 003A3	20	1	A	3	35	0.34623
 006M3	20	1	M	3	29	0.40205
 009P3	20	1	P	3	32	0.383449
