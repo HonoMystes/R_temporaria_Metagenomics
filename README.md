@@ -146,7 +146,7 @@ The last script to run will perform the alpha and beta diverity analysis as well
 `Div2.sh PopLund`
 
 ---
-## Citations
+## References
 
 Amir, A., McDonald, D., Navas-Molina, J. A., Kopylova, E., Morton, J. T., Xu, Z. Z., Kightley, E. P., Thompson, L. R., Hyde, E. R., Gonzalez, A., & Knight, R. (2017). Deblur rapidly resolves single-nucleotide community sequence patterns. MSystems, 2(2), e00191-16.
 
@@ -201,5 +201,10 @@ Wes McKinney. (2010a). Data Structures for Statistical Computing in Python . In 
 
 Wes McKinney. (2010b). Data Structures for Statistical Computing in Python . In S. van der Walt & Jarrod Millman (Eds.), Proceedings of the 9th Python in Science Conference (pp. 51–56).
 
+## Citation
+
+soon...
+
+## Copyright
 
 Copyright Daniela Deodato year 2025.
