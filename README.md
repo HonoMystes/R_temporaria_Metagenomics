@@ -22,7 +22,9 @@
         - [Inputs](#inputs-4)
         - [Outputs](#outputs-4)
 4. [Usage](#usage)
-5. [Citations](#citations)
+5. [References](#references)
+6. [Citation](#citation)
+7. [Copyright](#copyright)
 
 
 ## Installing
@@ -130,16 +132,6 @@ Before starting the analysis remember to download and activate de [qiime2](https
 `snap install yq`
 
 ## Usage
-Before starting the analysis remember to download and activate de [qiime2](https://docs.qiime2.org/2024.10/) amplicon enviroment.
-
-`conda update conda`
-
-`wget -O "https://data.qiime2.org/distro/amplicon/qiime2-amplicon-2024.10-py310-linux-conda.yml"`
-
-`conda env create -n qiime2-amplicon-2024.10 --file https://data.qiime2.org/distro/amplicon/qiime2-amplicon-2024.10-py310-linux-conda.yml`
-
-`conda activate qiime2-amplicon-2024.10`
-
 Uptade the ConfigFile.yml to your desire and then the analysis by start with running the *demu.sh* script:\
 As pointed out above the "PopLund" argument refers to the population name in study and must also be edited in the configuration file to your preference.
 
