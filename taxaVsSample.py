@@ -22,7 +22,6 @@ with open('ConfigFile.yml', 'r') as f:
     metadata=yaml.safe_load(f) 
 
 metadata_values=metadata['discriminats']
-#metadata_values=['index','temp', 'box', 'P', 'larval period', 'w_46', 'diet']
 taxa_col = [col for col in df.columns if col not in metadata_values]
 numb_var = df[focous].nunique()
 dif_var = df[focous].unique()
