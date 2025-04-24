@@ -15,13 +15,16 @@
     - [TaxoClassifyingModel.sh](#taxoclassifyingmodelsh)
         - [Inputs](#inputs-2)
         - [Outputs](#outputs-2)
+    - [taxaVsSample.py](#taxavssamplepy)
+        - [Input](#input)
+        - [Outputs](#outputs-3)
     - [phyloDiv.sh](#phylodivsh)
         - [Inputs](#inputs-3)
-        - [Outputs](#outputs-3)
+        - [Outputs](#outputs-4)
     - [Div2.sh](#div2sh)
         - [Inputs](#inputs-4)
-        - [Outputs](#outputs-4)
-4. [Usage](#usage)
+        - [Outputs](#outputs-5)
+4. [Usage](#usage-1)
 5. [References](#references)
 6. [Citation](#citation)
 7. [Copyright](#copyright)
@@ -43,10 +46,11 @@ The file is divided into 7 categories:
 - Finally, the diversity section contains the parameters of the maximum frequency (see taxonomy filtred frequency table) and the rarefraction depth where the alpha rarefraction stabilizes (see alpha rarefraction curve file).
 ---
 ## Scripts
+Apart from the *taxaVsSample.py* script all other scripts depend on the [QIIME2](https://docs.qiime2.org/2024.10/) program.
 The raw used are demultiplexed paired-end fastq.gz files all in one directory. 
 The fastq.gz files must be in one of these formats: sample_name_R1.fastq.gz / sample_name_R2.fastq.gz\
 The .qza files are artifact files and .qzv are visualization files of the software QIIME2 used in this code.\
-The visualization files can be viewed in [QIIME View](https://view.qiime2.org/).
+The visualization files can be viewed in [QIIME View](https://view.qiime2.org/). 
 
 At the moment the current scripts and files are:
 ### demu.sh
@@ -88,6 +92,16 @@ The *TaxoClassifyingModel.sh* script trains the classifing model specific of the
 - Feature tables (frequency table and representative sequences) filtred by taxa (.qza and for the frequency table also .qzv);
 - Taxonomy Bar Plot.
 
+### taxaVsSample.py
+The *taxaVsSample.py* script is a suplementary code to help in the analysis of the taxa found in our samples against a condition(collumn) in our data. To use this script you need the to download the csv file, from the taxonomy bar plot obtained in the previous script, in the taxonomy level of your choice, level-6 (genus) is recomended.The output generated will make a Venn diagram and a txt file detailing the specific and in common taxa against the condition(collumn) selected. The condition(collumn) must either have a total of 2 or 3 different variables to analysis. 
+
+#### Input:
+- csv file from the taxa bar plot
+
+#### Outputs:
+- Venn diagram;
+- txt file with the taxa in each point of the venn diagram.
+
 ### phyloDiv.sh
 The *phyloDiv.sh* performs the phylogeny and alpha rarefractrion analysis.
 
@@ -117,7 +131,7 @@ The *Div2.sh* script performes the alpha and beta diversity analysis after deter
 ---
 ## Manual installation
 
-Before starting the analysis remember to download and activate de [qiime2](https://docs.qiime2.org/2024.10/) amplicon enviroment.
+Before starting the analysis remember to download and activate de [qiime2](https://docs.qiime2.org/2024.10/install/native/) amplicon enviroment.
 
 `conda update conda`
 
@@ -130,6 +144,23 @@ Before starting the analysis remember to download and activate de [qiime2](https
 `conda install -c bioconda fastp`
 
 `snap install yq`
+
+For the python script we need to install:
+
+`pip install pyyaml`
+
+`pip install pandas`
+
+`pip install matplotlib-venn`
+
+##### Note:
+If the installing of the packages is not working try:
+
+`sudo apt install pyhton3-pyyaml`
+
+`sudo apt install pyhton3-pandas`
+
+`sudo apt install pyhton3-matplotlib-venn`
 
 ## Usage
 Uptade the ConfigFile.yml to your desire and then the analysis by start with running the *demu.sh* script:\
@@ -144,6 +175,10 @@ After analyzing the output *trimmed-seqs_PopLund.qzv* the denoise section of the
 With the feature tables created we then performe the taxonomic analysis by running the command:
 
 `TaxoClassifyingModel.sh PopLund`
+
+After the dowload of the csv file in the taxa bar plot we run:
+
+`python3 taxaVsSample.py <input_file> <collumn_in_focous> <output_file>`
 
 To start the diversity analysis we must first perform the phylogeny analysis and the alpha rarefraction curve. That is done by running the command:
 
