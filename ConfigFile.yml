@@ -38,7 +38,7 @@ tables:
 taxonomy:
   classifier: "artifact_PopLund/silva_16S_classifier.qza" #name of the classifier created from the silva database and adapted to our primers
   taxo_data: "artifact_PopLund/PopLund_taxonomy.qza" #taxonomy file created from our classifier and data 
-discriminats:
+discriminants:
   - index
   - diet
   - temp
