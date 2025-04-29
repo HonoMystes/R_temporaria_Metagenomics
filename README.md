@@ -37,14 +37,14 @@
 The *ConfigFile.yml* will be the only file to be altered depending on the data to be analyze. 
 Keep in mind that the "PopLund" you will see in this file will be population name, that is the argument you give in all the scripts and therefore it will need to be changed as well in the configuration file to your argument. 
 The file is divided into 7 categories:
-- raw, where is the complete path to our demultiplexed data, the name or path to our metadata file (tsv) and the name for the manifest file;
+- *raw*, where is the complete path to our demultiplexed data, the name or path to our metadata file (tsv) and the name for the manifest file;
 - directory_name, as the name indicates it has the names for the directories;
-- illumina has the primers used in the sequencing of the samples (check which one are used for the selected NGS tecnology);
-- denoise has the minimum number of sequences per sample and truncating parameters selected after analysing the trimming visualization output obtained after running the *demu.sh* script;
-- tables has the names of the tables created (the ones created from the denoising processe, the ones created after the filtering of chimeras and the ones after the filtering by taxa);
-- taxonomy contains the names for the classifier and the taxonomy file created based our our data;
-- discriminants contains a list of the collumns not atributed to taxa names in the csv file obtained from the taxa bar plot of the previous step;
-- Finally, the diversity section contains the parameters of the maximum frequency (see taxonomy filtred frequency table) and the rarefraction depth where the alpha rarefraction stabilizes (see alpha rarefraction curve file).
+- *illumina* has the primers used in the sequencing of the samples (check which one are used for the selected NGS tecnology);
+- *denoise* has the minimum number of sequences per sample and truncating parameters selected after analysing the trimming visualization output obtained after running the *demu.sh* script;
+- *tables* has the names of the tables created (the ones created from the denoising processe, the ones created after the filtering of chimeras and the ones after the filtering by taxa);
+- *taxonomy* contains the names for the classifier and the taxonomy file created based our our data;
+- *discriminants* contains a list of the collumns not atributed to taxa names in the csv file obtained from the taxa bar plot of the previous step;
+- Finally, the *diversity* section contains the parameters of the maximum frequency (see taxonomy filtred frequency table) and the rarefraction depth where the alpha rarefraction stabilizes (see alpha rarefraction curve file).
 ---
 ## Scripts
 Apart from the *taxaVsSample.py* script all other scripts depend on the [QIIME2](https://docs.qiime2.org/2024.10/) program.
