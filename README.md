@@ -43,6 +43,7 @@ The file is divided into 7 categories:
 - denoise has the minimum number of sequences per sample and truncating parameters selected after analysing the trimming visualization output obtained after running the *demu.sh* script;
 - tables has the names of the tables created (the ones created from the denoising processe, the ones created after the filtering of chimeras and the ones after the filtering by taxa);
 - taxonomy contains the names for the classifier and the taxonomy file created based our our data;
+- discriminants contains a list of the collumns not atributed to taxa names in the csv file obtained from the taxa bar plot of the previous step;
 - Finally, the diversity section contains the parameters of the maximum frequency (see taxonomy filtred frequency table) and the rarefraction depth where the alpha rarefraction stabilizes (see alpha rarefraction curve file).
 ---
 ## Scripts
