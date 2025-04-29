@@ -38,7 +38,7 @@ tables:
 taxonomy:
   classifier: "artifact_PopLund/silva_16S_classifier.qza" #name of the classifier created from the silva database and adapted to our primers
   taxo_data: "artifact_PopLund/PopLund_taxonomy.qza" #taxonomy file created from our classifier and data 
-discriminants:
+discriminants: #list of the collumns that are not taxa in the taxa csv obtained from the taxa bar plot
   - index
   - diet
   - temp
