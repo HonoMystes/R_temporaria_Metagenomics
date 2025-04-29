@@ -88,7 +88,7 @@ qiime diversity alpha-group-significance \
  --m-metadata-file $metadata \
  --o-visualization $outputDir_viz/evenness_statistics.qzv
 
- #analysis of variance (ANOVA) to test whether multiple effects significantly impact alpha d    iversity
+ #analysis of variance (ANOVA) to test whether multiple effects significantly impact alpha diversity
 qiime longitudinal anova \
   --m-metadata-file ./diversity_core_metrics/faith_pd_vector.qza \
   --m-metadata-file $metadata \
@@ -124,6 +124,7 @@ echo "Starting the Differential Abundance"
 #diferential abundance
 qiime feature-table filter-features \
   --i-table $artifact/$freq_tbl \
+  --m-metadata-file $metadata \
   --p-min-frequency 50 \
   --p-min-samples 4 \
   --o-filtered-table $artifact/table_abund.qza
