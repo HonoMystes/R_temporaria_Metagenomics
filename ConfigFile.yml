@@ -2,6 +2,14 @@
 raw:
   data_directory: "/scratch/FPM/frogs_metagenomics/01-raw_data/Rana_temporaria" #complete path to our sequences
   metadata: "./safe/metadata_PopLund.tsv" #path or name of the metadata file
+  values:
+    - index
+    - diet
+    - temp
+    - box
+    - P
+    - larval period
+    - w_46
   manifest: "manifest.tsv" #name of the manifest file
   threads: 24 #number of cores to run the code
 directory_name:
@@ -17,7 +25,7 @@ illumina:
   primer_r: "GACTACHVGGGTATCTAATCC" #reverse primer
 denoise:
   num_min_seq: 281 #minimum number of sequences per sample
-  length: 300 #truncation values for the right cut of the sequences 
+  length: 300 #truncation value for the right cut of the sequences 
 tables:
   freq_tbl: "PopLund_freq_table.qza" #tables obtained from denoising
   freq_tbl_viz: "PopLund_freq_table.qzv" #visualization of the frequnecy table obtained from denoising
@@ -30,6 +38,14 @@ tables:
 taxonomy:
   classifier: "artifact_PopLund/silva_16S_classifier.qza" #name of the classifier created from the silva database and adapted to our primers
   taxo_data: "artifact_PopLund/PopLund_taxonomy.qza" #taxonomy file created from our classifier and data 
+discriminats:
+  - index
+  - diet
+  - temp
+  - box
+  - P
+  - larval period
+  - w_46
 diversity:
   max_depth: 1230 #check maximum frequency in freq_table obtained after the filtrating with the taxonomy file
   raref_cap: 200 #see where in the alpha rarefraction it stabilizes
