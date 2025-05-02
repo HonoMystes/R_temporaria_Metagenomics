@@ -18,7 +18,6 @@ echo ""
 
 #Variables
 data=$1 #name of the directory with the samples
-cutadapt_file_art=$artifact/trimmed-seqs_$data.qza
 metadata=$(cat ConfigFile.yml | yq '.raw.metadata' | sed 's/\"//g')
 threads=$(cat ConfigFile.yml | yq '.raw.threads' | sed 's/\"//g')
 num_min_seq=$(cat ConfigFile.yml | yq '.denoise.num_min_seq' | sed 's/\"//g')
@@ -31,6 +30,7 @@ freq_tbl=$(cat ConfigFile.yml | yq '.tables.freq_tbl' | sed 's/\"//g')
 freq_tbl_viz=$(cat ConfigFile.yml | yq '.tables.freq_tbl_viz' | sed 's/\"//g')
 seqs_rep=$(cat ConfigFile.yml | yq '.tables.seqs_rep' | sed 's/\"//g')
 seqs_rep_viz=$(cat ConfigFile.yml | yq '.tables.seqs_rep_viz' | sed 's/\"//g')
+cutadapt_file_art=$artifact/trimmed-seqs_$data.qza
 fil=$artifact/filter.qza
 
 #Possible errors
