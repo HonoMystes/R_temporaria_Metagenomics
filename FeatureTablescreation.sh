@@ -86,9 +86,9 @@ qiime deblur denoise-16S \
 echo "pass denoising"
 
 #check if the files were created
-[ ! -e "$freq_tbl" ] && help && echo "ERROR: $freq_tbl not found" && exit 1
+[ ! -e "$artifact/$freq_tbl" ] && help && echo "ERROR: $artifact/$freq_tbl not found" && exit 1
 
-[ ! -e "$seqs_rep" ] && help && echo "ERROR: $seqs_rep not found" && exit 1
+[ ! -e "$artifact/$seqs_rep" ] && help && echo "ERROR: $artifact/$seqs_rep not found" && exit 1
 
 if [ ! -d "${data}_uchime-dn-out" ];
  then
