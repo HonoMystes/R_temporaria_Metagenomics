@@ -47,8 +47,8 @@ The file is divided into 7 categories:
 - Finally, the *diversity* section contains the parameters of the maximum frequency (see taxonomy filtred frequency table) and the rarefraction depth where the alpha rarefraction stabilizes (see alpha rarefraction curve file).
 ---
 ## Scripts
-Apart from the *taxaVsSample.py* script all other scripts depend on the [QIIME2](https://docs.qiime2.org/2024.10/) program.
-The raw used are demultiplexed paired-end fastq.gz files all in one directory. 
+Apart from the *taxaVsSample.py* script all other scripts depend on the [QIIME2](https://docs.qiime2.org/2024.10/) program.\
+The raw used are demultiplexed paired-end fastq.gz files all in one directory.\
 The fastq.gz files must be in one of these formats: sample_name_R1.fastq.gz / sample_name_R2.fastq.gz\
 The .qza files are artifact files and .qzv are visualization files of the software QIIME2 used in this code.\
 The visualization files can be viewed in [QIIME View](https://view.qiime2.org/). 
@@ -134,33 +134,24 @@ The *Div2.sh* script performes the alpha and beta diversity analysis after deter
 
 Before starting the analysis remember to download and activate de [qiime2](https://docs.qiime2.org/2024.10/install/native/) amplicon enviroment.
 
-`conda update conda`
-
-`wget -O "https://data.qiime2.org/distro/amplicon/qiime2-amplicon-2024.10-py310-linux-conda.yml"`
-
-`conda env create -n qiime2-amplicon-2024.10 --file https://data.qiime2.org/distro/amplicon/qiime2-amplicon-2024.10-py310-linux-conda.yml`
-
-`conda activate qiime2-amplicon-2024.10`
-
-`conda install -c bioconda fastp`
-
+`conda update conda`\
+`wget -O "https://data.qiime2.org/distro/amplicon/qiime2-amplicon-2024.10-py310-linux-conda.yml"`\
+`conda env create -n qiime2-amplicon-2024.10 --file https://data.qiime2.org/distro/amplicon/qiime2-amplicon-2024.10-py310-linux-conda.yml`\
+`conda activate qiime2-amplicon-2024.10`\
+`conda install -c bioconda fastp`\
 `snap install yq`
 
 For the python script we need to install:
 
-`pip install pyyaml`
-
-`pip install pandas`
-
+`pip install pyyaml`\
+`pip install pandas`\
 `pip install matplotlib-venn`
 
 ##### Note:
 If the installing of the packages is not working try:
 
-`sudo apt install pyhton3-pyyaml`
-
-`sudo apt install pyhton3-pandas`
-
+`sudo apt install pyhton3-pyyaml`\
+`sudo apt install pyhton3-pandas`\
 `sudo apt install pyhton3-matplotlib-venn`
 
 ## Usage
