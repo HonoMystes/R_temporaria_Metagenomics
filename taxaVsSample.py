@@ -21,7 +21,7 @@ df = pd.read_csv(input_file)
 with open('ConfigFile.yml', 'r') as f:
     metadata=yaml.safe_load(f) 
 
-metadata_values=metadata['discriminats']
+metadata_values=metadata['discriminants']
 taxa_col = [col for col in df.columns if col not in metadata_values]
 numb_var = df[focous].nunique()
 dif_var = df[focous].unique()
@@ -29,8 +29,8 @@ print(f'Number of different variables: {numb_var}')
 print(f'Variables: {dif_var}')
 
 if numb_var == 2:
-    taxa1=set(df[df[focous ] == dif_var[0]] [taxa_col].loc[:,(df[df[focous] == dif_var[0]] [taxa_col] != 0).any()].columns)
-    taxa2=set(df[df[focous ] == dif_var[1]] [taxa_col].loc[:,(df[df[focous] == dif_var[1]] [taxa_col] != 0).any()].columns)
+    taxa1=set(df[df[focous] == dif_var[0]] [taxa_col].loc[:,(df[df[focous] == dif_var[0]] [taxa_col] != 0).any()].columns)
+    taxa2=set(df[df[focous] == dif_var[1]] [taxa_col].loc[:,(df[df[focous] == dif_var[1]] [taxa_col] != 0).any()].columns)
     both=taxa1 & taxa2
     only_1=taxa1 - taxa2
     only_2=taxa2 - taxa1
