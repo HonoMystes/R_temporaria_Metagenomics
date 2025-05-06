@@ -2,14 +2,6 @@
 raw:
   data_directory: "/scratch/FPM/frogs_metagenomics/01-raw_data/Rana_temporaria" #complete path to our sequences
   metadata: "./safe/metadata_PopLund.tsv" #path or name of the metadata file
-  values:
-    - index
-    - diet
-    - temp
-    - box
-    - P
-    - larval period
-    - w_46
   manifest: "manifest.tsv" #name of the manifest file
   threads: 24 #number of cores to run the code
 directory_name:
