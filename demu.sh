@@ -34,8 +34,10 @@ artifact=$(cat ConfigFile.yml | yq '.directory_name.artifact' | sed 's/\"//g')
 visualizations=$(cat ConfigFile.yml | yq '.directory_name.visualizations' | sed 's/\"//g')
 prim_f=$(cat ConfigFile.yml | yq '.illumina.primer_f' | sed 's/\"//g')
 prim_r=$(cat ConfigFile.yml | yq '.illumina.primer_r' | sed 's/\"//g')
-INFILE_R1=./names_R1.txt
-INFILE=quality_R1names.txt
+tag_R1=$(cat ConfigFile.yml | yq '.illumina.paired_end_tag_1' | sed 's/\"//g')
+tag_R2=$(cat ConfigFile.yml | yq '.illumina.paired_end_tag_2' | sed 's/\"//g')
+INFILE_R1=./names$tag_R1.txt
+INFILE=quality${tag_R1}names.txt
 
 #Possible errors
 #check the number of arguments
@@ -49,13 +51,13 @@ if [ $# -ne 1 ];
 
 #directories
 mkdir -p $quality
-ls $path_file/*_R1.fastq.gz > $INFILE
+ls $path_file/*${tag_R1}.fastq.gz > $INFILE
 
 #quality filtering the sequencies using fastp, we will use the infile created in create_manifest_file.sh
 while read LINE; do
 	id=$(basename $LINE)
-	id_R2=$(basename $LINE | sed 's/_R1/_R2/g')
-	R2=$(echo $LINE | sed 's/_R1/_R2/g')
+	id_R2=$(basename $LINE | sed "s/${tag_R1}/${tag_R2}/g")
+	R2=$(echo $LINE | sed "s/${tag_R1}/${tag_R2}/g")
 	fastp -i $LINE -I $R2 -w $threads -h fastp_$id.html -j fastp_$id.json -o ./$quality/out_$id -O ./$quality/out_$id_R2 
 done < $INFILE
 echo "----------------"
@@ -65,15 +67,15 @@ mv *.html $fastp/
 mv *.json $fastp/
 #make manifest file
 current_directory=$(pwd)
-ls $current_directory/$quality/*_R1.fastq.gz > $INFILE_R1
+ls $current_directory/$quality/*${tag_R1}.fastq.gz > $INFILE_R1
 
 #header
 echo "sample-id	forward-absolute-filepath	reverse-absolute-filepath" > $manifest
 
 #filling tsv
 while read LINE; do
-	sample_id=$(basename -s .fastq.gz $LINE | sed 's/_R1//g' | sed 's/out_//g')
-        R2=$(echo $LINE | sed 's/_R1/_R2/g')
+	sample_id=$(basename -s .fastq.gz $LINE | sed "s/${tag_R1}//g" | sed 's/out_//g')
+        R2=$(echo $LINE | sed "s/${tag_R1}/${tag_R2}/g")
         echo "$sample_id	$LINE	$R2" >> $manifest
 done < $INFILE_R1
 
