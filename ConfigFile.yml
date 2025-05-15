@@ -17,7 +17,7 @@ illumina:
   paired_end_tag_2: "_R2" #identifier of the reverse read
   primer_f: "CCTACGGGNGGCWGCAG" #forward primer
   primer_r: "GACTACHVGGGTATCTAATCC" #reverse primer
-denoise:
+denoise: 
   num_min_seq: 281 #minimum number of sequences per sample
   length: 300 #truncation value for the right cut of the sequences 
 tables:
