@@ -1,35 +1,37 @@
 ---
 raw:
   data_directory: "/scratch/FPM/frogs_metagenomics/01-raw_data/Rana_temporaria" #complete path to our sequences
-  metadata: "./safe/metadata_PopLund.tsv" #path or name of the metadata file
+  metadata: "./safe/metadata_PopName.tsv" #path or name of the metadata file
   manifest: "manifest.tsv" #name of the manifest file
   threads: 24 #number of cores to run the code
 directory_name:
-  output_dir_cutadapt: "cutadapt_PopLund/" #name of the directory after cutting the primers
-  quality: "qualityDir_PopLund" #name of the directory of the outputs of the fastp programm
-  fastp: "fastp_reports_PopLund" #name of the directory of the reports from the fastp programm
-  artifact: "arifact_PopLund" #name of the directory for the artifacts
-  visualizations: "visualizations_PopLund" #name of the directory for the visualizations, not including the diversity results
-  phylogeny: "phylogeny_PopLund" #name of the directory for the outputs generated after performing the phylogeny analysis
-  viz_dir_div: "diversity_results_viz_PopLund" #name of the directory for the visualizations of the diversity results
+  output_dir_cutadapt: "cutadapt_PopName/" #name of the directory after cutting the primers
+  quality: "qualityDir_PopName" #name of the directory of the outputs of the fastp programm
+  fastp: "fastp_reports_PopName" #name of the directory of the reports from the fastp programm
+  artifact: "arifact_PopName" #name of the directory for the artifacts
+  visualizations: "visualizations_PopName" #name of the directory for the visualizations, not including the diversity results
+  phylogeny: "phylogeny_PopName" #name of the directory for the outputs generated after performing the phylogeny analysis
+  viz_dir_div: "diversity_results_viz_PopName" #name of the directory for the visualizations of the diversity results
 illumina:
+  paired_end_tag_1: "_R1" #identifier of the forward read
+  paired_end_tag_2: "_R2" #identifier of the reverse read
   primer_f: "CCTACGGGNGGCWGCAG" #forward primer
   primer_r: "GACTACHVGGGTATCTAATCC" #reverse primer
 denoise:
   num_min_seq: 281 #minimum number of sequences per sample
   length: 300 #truncation value for the right cut of the sequences 
 tables:
-  freq_tbl: "PopLund_freq_table.qza" #tables obtained from denoising
-  freq_tbl_viz: "PopLund_freq_table.qzv" #visualization of the frequnecy table obtained from denoising
-  seqs_rep: "PopLund_rep_seqs.qza" #tables obtained from denoising
-  seqs_rep_viz: "PopLund_rep_seqs.qzv" #visualization of the representative sequeces obtained from denoising
-  freq_wctbl: "w_chimeraPopLund_freq_table.qza" #tables obtained from filtering of chimeras
-  seqs_wcrep: "w_chimeraPopLund_rep_seqs.qza" #tables obtained from filtering of chimeras
+  freq_tbl: "PopName_freq_table.qza" #tables obtained from denoising
+  freq_tbl_viz: "PopName_freq_table.qzv" #visualization of the frequnecy table obtained from denoising
+  seqs_rep: "PopName_rep_seqs.qza" #tables obtained from denoising
+  seqs_rep_viz: "PopName_rep_seqs.qzv" #visualization of the representative sequeces obtained from denoising
+  freq_wctbl: "w_chimeraPopName_freq_table.qza" #tables obtained from filtering of chimeras
+  seqs_wcrep: "w_chimeraPopName_rep_seqs.qza" #tables obtained from filtering of chimeras
   taxa_freq: "freq_taxo_tbl.qza" #tables obtained from filtering by taxa
   taxa_seqs: "reps_taxo_seqs.qza" #tables obtained from filtering by taxa
 taxonomy:
-  classifier: "artifact_PopLund/silva_16S_classifier.qza" #name of the classifier created from the silva database and adapted to our primers
-  taxo_data: "artifact_PopLund/PopLund_taxonomy.qza" #taxonomy file created from our classifier and data 
+  classifier: "artifact_PopName/silva_16S_classifier.qza" #name of the classifier created from the silva database and adapted to our primers
+  taxo_data: "artifact_PopName/PopLund_taxonomy.qza" #taxonomy file created from our classifier and data 
 discriminants: #list of the collumns that are not taxa in the taxa csv obtained from the taxa bar plot
   - index
   - diet
