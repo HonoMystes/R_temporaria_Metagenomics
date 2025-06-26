@@ -45,25 +45,25 @@ if [ ! -e "$metadata" ];
  fi
 
 #check if frequency table exists
-if [ ! -e "$arifact/$freq_tbl" ];
+if [ ! -e "$artifact/$freq_tbl" ];
  then
   help
-  echo "ERROR: file $arifact/$freq_tbl not found"
+  echo "ERROR: file $artifact/$freq_tbl not found"
   echo "Please check if the name is correct and the file is in the current directory"
   exit 1
  fi
 
 #check if representative sequences table exists
-if [ ! -e "$arifact/$seqs_rep" ];
+if [ ! -e "$artifact/$seqs_rep" ];
  then
   help
-  echo "ERROR: file $arifact/$seqs_rep not found"
+  echo "ERROR: file $artifact/$seqs_rep not found"
   echo "Please check if the name is correct and the file is in the current directory"
   exit 1
  fi
 
 qiime phylogeny align-to-tree-mafft-fasttree \
-	--i-sequences $arifact/$seqs_rep \
+	--i-sequences $artifact/$seqs_rep \
 	--o-alignment aligned-rep-seqs.qza \
 	--o-masked-alignment masked-aligned-rep-seqs.qza \
 	--o-tree unrooted-tree.qza \
@@ -86,7 +86,7 @@ fi
 
 #rarefraction
 qiime diversity alpha-rarefaction \
-  --i-table $arifact/$freq_tbl \
+  --i-table $artifact/$freq_tbl \
   --m-metadata-file $metadata \
   --o-visualization $outputDir_viz/alpha_rarefaction_curves.qzv \
   --p-min-depth 1 \
