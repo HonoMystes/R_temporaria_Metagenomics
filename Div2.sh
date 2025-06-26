@@ -63,7 +63,7 @@ if [ -e $outputDir_viz ];
 fi
 
 #check if frequency table exists
-if [ ! -e "$freq_tbl" ];
+if [ ! -e "$artifact/$freq_tbl" ];
  then
   help
   echo "ERROR: file $artifact/$freq_tbl not found"
@@ -124,14 +124,13 @@ echo "Starting the Differential Abundance"
 #diferential abundance
 qiime feature-table filter-features \
   --i-table $artifact/$freq_tbl \
-  --m-metadata-file $metadata \
   --p-min-frequency 50 \
   --p-min-samples 4 \
   --o-filtered-table $artifact/table_abund.qza
 
 #searching for differencies in the gut microbiome between temp and diet
 qiime composition ancombc \
-  --i-table $artifact/table_abund.qza \
+  --i-table $artifact/$freq_tbl \
   --m-metadata-file $metadata \
   --p-formula 'diet' \
   --p-prv-cut 0 \
@@ -143,7 +142,7 @@ qiime composition da-barplot \
   --o-visualization $outputDir_viz/da_barplot_diet.qzv
 
 qiime composition ancombc \
-  --i-table $artifact/table_abund.qza \
+  --i-table $artifact/$freq_tbl \
   --m-metadata-file $metadata \
   --p-formula 'temp' \
   --p-prv-cut 0 \
@@ -155,7 +154,7 @@ qiime composition da-barplot \
   --o-visualization $outputDir_viz/da_barplot_temp.qzv
 
 qiime composition ancombc \
-  --i-table $artifact/table_abund.qza \
+  --i-table $artifact/$freq_tbl \
   --m-metadata-file $metadata \
   --p-formula 'diet + temp' \
   --p-prv-cut 0 \
@@ -169,10 +168,6 @@ qiime composition da-barplot \
 echo "Diversity analysis finished ~~***"
 echo ''' 
           . .
-         ( ,-)------* 
+         ( .-)------* 
       _(_|   |_)_
  '''
-
-
-
-
