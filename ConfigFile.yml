@@ -1,37 +1,45 @@
 ---
 raw:
   data_directory: "/scratch/FPM/frogs_metagenomics/01-raw_data/Rana_temporaria" #complete path to our sequences
-  metadata: "./safe/metadata_PopName.tsv" #path or name of the metadata file
+  metadata: "metadata_PopLund.tsv" #path or name of the metadata file
   manifest: "manifest.tsv" #name of the manifest file
   threads: 24 #number of cores to run the code
 directory_name:
-  output_dir_cutadapt: "cutadapt_PopName/" #name of the directory after cutting the primers
-  quality: "qualityDir_PopName" #name of the directory of the outputs of the fastp programm
-  fastp: "fastp_reports_PopName" #name of the directory of the reports from the fastp programm
-  artifact: "arifact_PopName" #name of the directory for the artifacts
-  visualizations: "visualizations_PopName" #name of the directory for the visualizations, not including the diversity results
-  phylogeny: "phylogeny_PopName" #name of the directory for the outputs generated after performing the phylogeny analysis
-  viz_dir_div: "diversity_results_viz_PopName" #name of the directory for the visualizations of the diversity results
+  output_dir_cutadapt: "demu_PopLund/" #name of the directory after demultiplexing the primers
+  quality: "qualityDir_PopLund" #name of the directory of the outputs of the fastp programm
+  fastp: "fastp_reports_PopLund" #name of the directory of the reports from the fastp programm
+  artifact: "artifact_PopLund" #name of the directory for the artifacts
+  visualizations: "visualizations_PopLund" #name of the directory for the visualizations, not including the diversity results
+  phylogeny: "phylogeny_PopLund" #name of the directory for the outputs generated after performing the phylogeny analysis
+  viz_dir_div: "diversity_results_viz_PopLund" #name of the directory for the visualizations of the diversity results
 illumina:
   paired_end_tag_1: "_R1" #identifier of the forward read
   paired_end_tag_2: "_R2" #identifier of the reverse read
   primer_f: "CCTACGGGNGGCWGCAG" #forward primer
   primer_r: "GACTACHVGGGTATCTAATCC" #reverse primer
 denoise: 
-  num_min_seq: 281 #minimum number of sequences per sample
-  length: 300 #truncation value for the right cut of the sequences 
+  num_min_seq: 338 #minimum number of sequences per sample
+  chimera_method: "consensus" #Choices('consensus', 'none', 'pooled')check dada2 or qiime2 documentation
+  chimeric_parent_over_abundance: 8 #The minimum abundance of potential parents of a sequence being tested as chimeric, expressed as a fold-change versus the abundance of the sequence being tested.
+  min_overlap: 12 #The minimum length of the overlap required for merging the forward and reverse reads.
+  trim_f: 2 #Position at which forward read sequences should be trimmed due to decrease in quality at the 5' end. Reads that are shorter than this value will be discarded.
+  trim_r: 2 #Position at which reverse read sequences should be trimmed due to decrease in quality at the 5' end. Reads that are shorter than this value will be discarded.
+  trunc_f: 265 #Position at which forward read sequences should be truncated due to decrease in quality at the 3' end. Reads that are shorter than this value will be discarded.
+  trunc_r: 265 #Position at which reverse read sequences should be truncated due to decrease in quality at the 3' end. Reads that are shorter than this value will be discarded.
 tables:
-  freq_tbl: "PopName_freq_table.qza" #tables obtained from denoising
-  freq_tbl_viz: "PopName_freq_table.qzv" #visualization of the frequnecy table obtained from denoising
-  seqs_rep: "PopName_rep_seqs.qza" #tables obtained from denoising
-  seqs_rep_viz: "PopName_rep_seqs.qzv" #visualization of the representative sequeces obtained from denoising
-  freq_wctbl: "w_chimeraPopName_freq_table.qza" #tables obtained from filtering of chimeras
-  seqs_wcrep: "w_chimeraPopName_rep_seqs.qza" #tables obtained from filtering of chimeras
+  freq_tbl: "PopLund_freq_table.qza" #tables obtained from denoising
+  freq_tbl_viz: "PopLund_freq_table.qzv" #visualization of the frequnecy table obtained from denoising
+  seqs_rep: "PopLund_rep_seqs.qza" #tables obtained from denoising
+  seqs_rep_viz: "PopLund_rep_seqs.qzv" #visualization of the representative sequeces obtained from denoising
   taxa_freq: "freq_taxo_tbl.qza" #tables obtained from filtering by taxa
+  taxa_freq_viz: "freq_taxo_tbl.qzv" #visualization of the frequency table obtained from filtering by taxa
   taxa_seqs: "reps_taxo_seqs.qza" #tables obtained from filtering by taxa
+  taxa_seqs_viz: "reps_taxo_seqs.qzv" #visualization of the representative sequeces obtained from filtering by taxa
 taxonomy:
-  classifier: "artifact_PopName/silva_16S_classifier.qza" #name of the classifier created from the silva database and adapted to our primers
-  taxo_data: "artifact_PopName/PopLund_taxonomy.qza" #taxonomy file created from our classifier and data 
+  version: 138.2 #SILVA database version to download.
+  target: "SSURef_NR99" #Reference sequence target to download. SSURef (redundant small subunit reference). LSURef (redundant large subunit reference). SSURef_NR99 (non-redundant, clustered at 99% similarity, small subunit reference).
+  classifier: "silva_16S_classifier.qza" #name of the classifier created from the silva database and adapted to our primers
+  taxo_data: "PopLund_taxonomy.qza" #taxonomy file created from our classifier and data 
 discriminants: #list of the collumns that are not taxa in the taxa csv obtained from the taxa bar plot
   - index
   - diet
@@ -41,6 +49,7 @@ discriminants: #list of the collumns that are not taxa in the taxa csv obtained 
   - larval period
   - w_46
 diversity: 
-  max_depth: 1230 #check maximum frequency in freq_table obtained after the filtrating with the taxonomy file
-  raref_cap: 200 #see where in the alpha rarefraction it stabilizes
+  max_depth: 191500 #check median frequency in freq_table obtained after the filtrating with the taxonomy file
+  raref_cap: 60000 #see where in the alpha rarefraction it stabilizes
 ...
+
