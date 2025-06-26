@@ -32,8 +32,6 @@ fastp=$(cat ConfigFile.yml | yq '.directory_name.fastp' | sed 's/\"//g')
 quality=$(cat ConfigFile.yml | yq '.directory_name.quality' | sed 's/\"//g')
 artifact=$(cat ConfigFile.yml | yq '.directory_name.artifact' | sed 's/\"//g')
 visualizations=$(cat ConfigFile.yml | yq '.directory_name.visualizations' | sed 's/\"//g')
-prim_f=$(cat ConfigFile.yml | yq '.illumina.primer_f' | sed 's/\"//g')
-prim_r=$(cat ConfigFile.yml | yq '.illumina.primer_r' | sed 's/\"//g')
 tag_R1=$(cat ConfigFile.yml | yq '.illumina.paired_end_tag_1' | sed 's/\"//g')
 tag_R2=$(cat ConfigFile.yml | yq '.illumina.paired_end_tag_2' | sed 's/\"//g')
 INFILE_R1=./names$tag_R1.txt
@@ -114,23 +112,11 @@ if [ ! -e "$artifact/$data.qza" ];
   echo "$artifact/$data.qza file present"
 fi
 
-#Cutting primers with cutadapt
-#cutadapt
-echo "Cutting primers with cutadapt"
-qiime cutadapt trim-paired \
-        --i-demultiplexed-sequences $artifact/$data.qza \
-        --p-adapter-f $prim_f \
-        --p-adapter-r $prim_r \
-        --p-error-rate 0 \
-        --p-cores $threads \
-        --o-trimmed-sequences $artifact/trimmed-seqs_$data.qza \
-        --verbose
-
 #Summarize for vizualization
 echo "Summarizing demultiplexing"
 qiime demux summarize \
-   --i-data $artifact/trimmed-seqs_$data.qza \
-   --o-visualization $visualizations/trimmed-seqs_$data.qzv
+   --i-data $artifact/$data.qza \
+   --o-visualization $visualizations/$data.qzv
 
 #to avoid errors with qiime2 if an $outputDir already exists it is erased
 if [ -d $outputDir ];
@@ -141,19 +127,20 @@ fi
 #Vizualization
 echo "Preparing visualization"
 qiime tools export \
-  --input-path $visualizations/trimmed-seqs_$data.qzv \
+  --input-path $visualizations/$data.qzv \
   --output-path $outputDir
 
 #organizing outputs
 mv "$INFILE_R1" "$outputDir"
 mv "$INFILE" "$outputDir"
 
-echo "Check the "Interactive Quality Plot" tab in $visualizations/trimmed-seqs_$data.qzv in $outputDir file to know what to do on the next step."
+echo "Check the "Interactive Quality Plot" tab in $visualizations/$data.qzv, additional information in $outputDir file to know what to do on the next step."
 echo ''' 
           . .
-         ( .-)-----*¨
+         ( .-)-----*
       _(_|   |_)_
 
 '''
+
 
 
