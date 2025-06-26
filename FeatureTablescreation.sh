@@ -11,7 +11,7 @@ set -e
 function help {
 echo ""
 echo "This code is the second part of the metagenomic analysis of my thesis, using the qiime2 software"
-echo "After cuting the primers and analysing the "interactive Quality Plot" in the file artifacts_PopLund/trimmed-seqs_${data}.qzv the perfered numbers in the configuration file are edited. "
+echo "After cuting the primers and analysing the "interactive Quality Plot" in the file artifacts_PopLund/${data}.qzv the perfered numbers in the configuration file are edited. "
 echo "the script runs with the argumentof the name of the population"
 echo ""
 }
@@ -22,6 +22,13 @@ metadata=$(cat ConfigFile.yml | yq '.raw.metadata' | sed 's/\"//g')
 threads=$(cat ConfigFile.yml | yq '.raw.threads' | sed 's/\"//g')
 num_min_seq=$(cat ConfigFile.yml | yq '.denoise.num_min_seq' | sed 's/\"//g')
 length=$(cat ConfigFile.yml | yq '.denoise.length' | sed 's/\"//g')
+trim_f=$(cat ConfigFile.yml | yq '.denoise.trim_f' | sed 's/\"//g')
+trim_r=$(cat ConfigFile.yml | yq '.denoise.trim_r' | sed 's/\"//g')
+trunc_f=$(cat ConfigFile.yml | yq '.denoise.trunc_f' | sed 's/\"//g')
+trunc_r=$(cat ConfigFile.yml | yq '.denoise.trunc_r' | sed 's/\"//g')
+chimera_method=$(cat ConfigFile.yml | yq '.denoise.chimera_method' | sed 's/\"//g')
+overlap=$(cat ConfigFile.yml | yq '.denoise.min_overlap' | sed 's/\"//g')
+tucker=$(cat ConfigFile.yml | yq '.denoise.chimeric_parent_over_abundance' | sed 's/\"//g')
 outputDir=$(cat ConfigFile.yml | yq '.directory_name.output_dir_cutadapt' | sed 's/\"//g')
 artifact=$(cat ConfigFile.yml | yq '.directory_name.artifact' | sed 's/\"//g')
 visualizations=$(cat ConfigFile.yml | yq '.directory_name.visualizations' | sed 's/\"//g')
@@ -30,7 +37,7 @@ freq_tbl=$(cat ConfigFile.yml | yq '.tables.freq_tbl' | sed 's/\"//g')
 freq_tbl_viz=$(cat ConfigFile.yml | yq '.tables.freq_tbl_viz' | sed 's/\"//g')
 seqs_rep=$(cat ConfigFile.yml | yq '.tables.seqs_rep' | sed 's/\"//g')
 seqs_rep_viz=$(cat ConfigFile.yml | yq '.tables.seqs_rep_viz' | sed 's/\"//g')
-cutadapt_file_art=$artifact/trimmed-seqs_$data.qza
+cutadapt_file_art=$artifact/$data.qza
 fil=$artifact/filter.qza
 
 #Possible errors
@@ -72,71 +79,41 @@ echo "pass filter_sample"
 #check if the file was created
 [ ! -e "$fil" ] && help && echo "ERROR: $fil not found" && exit 1
 
-###
-#Denoising
-qiime deblur denoise-16S \
+#DADA2 denoise with minimum overlap defined by the use
+qiime dada2 denoise-paired \
   --i-demultiplexed-seqs $fil \
-  --p-trim-length $length \
-  --o-representative-sequences $artifact/$seqs_rep \
+  --p-trim-left-f $trim_f \
+  --p-trim-left-r $trim_r \
+  --p-trunc-len-f $trunc_f \
+  --p-trunc-len-r $trunc_r \
+  --p-chimera-method $chimera_method \
+  --p-min-fold-parent-over-abundance $tucker \
+  --p-min-overlap $overlap \
+  --p-n-threads $threads \
   --o-table $artifact/$freq_tbl \
-  --p-sample-stats \
-  --o-stats $artifact/deblur_stats.qza \
-  --p-jobs-to-start $threads
+  --o-representative-sequences $artifact/$seqs_rep \
+  --o-denoising-stats $artifact/dada2_stats.qza
 
 echo "pass denoising"
+
+##visualize stats deblur
+qiime metadata tabulate \
+  --m-input-file $artifact/dada2_stats.qza  \
+  --o-visualization $visualizations/dada2_stats.qzv
 
 #check if the files were created
 [ ! -e "$artifact/$freq_tbl" ] && help && echo "ERROR: $artifact/$freq_tbl not found" && exit 1
 
 [ ! -e "$artifact/$seqs_rep" ] && help && echo "ERROR: $artifact/$seqs_rep not found" && exit 1
 
-if [ ! -d "${data}_uchime-dn-out" ];
- then
-  echo "Proceding with chimera elimination"
-  else
-  echo "${data}_uchime-dn-out directory is present"
-  echo "deleting exixting ${data}_uchime-dn-out directory"
-  rm -rf ${data}_uchime-dn-out
- fi
-
-###Exclude Chimeras
-echo "Examining for chimeras"
-
-echo "Running de novo" 
-qiime vsearch uchime-denovo \
-  --i-table $artifact/$freq_tbl \
-  --i-sequences $artifact/$seqs_rep \
-  --output-dir ${data}_uchime-dn-out
-
-echo "pass chimera"
-
-qiime metadata tabulate \
-  --m-input-file ${data}_uchime-dn-out/stats.qza \
-  --o-visualization ${data}_uchime-dn-out/stats.qzv
-
-qiime deblur visualize-stats \
-  --i-deblur-stats $artifact/deblur_stats.qza \
-  --o-visualization $visualizations/deblur_stats.qzv
-
-#Feature tables
-qiime feature-table filter-features \
-  --i-table $artifact/$freq_tbl \
-  --m-metadata-file ${data}_uchime-dn-out/nonchimeras.qza \
-  --o-filtered-table $artifact/w_chimeraPopLund_freq_table.qza
-
-qiime feature-table filter-seqs \
-  --i-data $artifact/$seqs_rep \
-  --m-metadata-file ${data}_uchime-dn-out/nonchimeras.qza \
-  --o-filtered-data $artifact/w_chimeraPopLund_rep_seqs.qza
-
 qiime feature-table summarize \
   --i-table $artifact/$freq_tbl \
   --m-sample-metadata-file $metadata \
-  --o-visualization $visualization/$freq_tbl_viz
+  --o-visualization $visualizations/$freq_tbl_viz
 
-qiime feature-table summarize \
- --i-table $artifact/w_chimeraPopLund_freq_table.qza \
- --m-sample-metadata-file $metadata \
- --o-visualization $visualizations/w_chimeraPopLund_freq_table.qzv
+qiime feature-table tabulate-seqs \
+ --i-data $artifact/$seqs_rep \
+ --o-visualization $visualizations/$seqs_rep_viz
 
 echo "check $visualizations/w_chimeraPopLund_freq_table.qzv to know what to do on script phyloDiv.sh"
+echo "This script took $SECONDS seconds to run. =^w^="
