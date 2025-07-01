@@ -37,14 +37,16 @@
 The *ConfigFile.yml* will be the only file to be altered depending on the data to be analyze. 
 Keep in mind that the "PopName" you will see in this file will be population name, that is the argument you give in all the scripts and therefore it will need to be changed as well in the configuration file to your argument. 
 The file is divided into 7 categories:
-- *raw*, where is the complete path to our demultiplexed data, the name or path to our metadata file (tsv) and the name for the manifest file;
-- directory_name, as the name indicates it has the names for the directories;
+- *raw*, where is the complete path to our demultiplexed data, the name or path to our metadata file (tsv), the name for the manifest file and the number of threads to be used in the processes;
+- *directory_name*, as the name indicates it has the names for the directories;
 - *illumina* has the primers used in the sequencing of the samples (check which one are used for the selected NGS technology) and the identifiers of the forward and reverse read of the sequences;
-- *denoise* has the minimum number of sequences per sample and truncating parameters selected after analysing the trimming visualization output obtained after running the *demu.sh* script;
-- *tables* has the names of the tables created (the ones created from the denoising process, the ones created after the filtering of chimeras and the ones after the filtering by taxa);
-- *taxonomy* contains the names for the classifier and the taxonomy file created based our data;
+- *denoise* has the minimum number of sequences per sample, truncating and trimming parameters selected after analysing the demultiplexed visualization output obtained after running the *demu.sh* script, the chimera method used, the minimum length of the overlap and the minimum abundance of potential parents of a sequence being tested as chimeric;
+- *tables* has the names of the tables created (the ones created from the denoising process, the ones created after the filtering of chimeras and the ones after the filtering by taxa) in artifact and visualization form;
+- *taxonomy* contains the version and target of the SILVA database used and the names for the classifier and the taxonomy file created based our data;
 - *discriminants* contain a list of the columns not attributed to taxa names in the csv file obtained from the taxa bar plot of the previous step;
 - Finally, the *diversity* section contains the parameters of the maximum frequency (see taxonomy filtered frequency table) and the rarefraction depth where the alpha rarefaction stabilizes (see alpha rarefaction curve file).
+
+For a more detailed explanation check the [QIIME2](https://docs.qiime2.org/2024.10/) documentation.
 ---
 ## Scripts
 Apart from the *taxaVsSample.py* script all other scripts depend on the [QIIME2](https://docs.qiime2.org/2024.10/) program.\
@@ -55,20 +57,20 @@ The visualization files can be viewed in [QIIME View](https://view.qiime2.org/).
 
 The current scripts and files are:
 ### demu.sh
-The *demu.sh* script will perform the quality control of our samples using the [fastp](https://github.com/OpenGene/fastp?tab=readme-ov-file#quality-filter) command the resulting path to that output will be used in the creation of a manifest file (.tsv file) to start importing the demultiplexed and quality checked sequences into artifact type using the tsv file created and cutting the primers with cutadapt.
+The *demu.sh* script will perform the quality control of our samples using the [fastp](https://github.com/OpenGene/fastp?tab=readme-ov-file#quality-filter) command the resulting path to that output will be used in the creation of a manifest file (.tsv file) to start importing the demultiplexed and quality checked sequences into artifact type using the tsv file created (manifest file).
 
 #### Inputs: 
 - Population name (argument);
-- In the Configuration file alter the: path to the samples, the name for the manifest file, the name of the directories (cutadapt, artifact, visualizations, quality and fastp), primers sequences and number of threads to be used.
+- In the Configuration file alter the: path to the samples, the name for the manifest file, the name of the directories (demultiplxed, artifact, visualizations, quality and fastp), how the paired-end reads are tagged (Eg.: "_R1") and number of threads to be used.
 
 #### Outputs: 
 - Fastp outputs (.fastq.gz);
 - Manifest file (.tsv);
 - demultiplexed samples artifact (.qza);
-- Trimmed artifact of our samples (.qza).
+- Demultiplxed and quality controled samples' visualization (.qzv).
 
 ### FeatureTablecreation.sh
-The *FeatureTablecreation.sh* script uses the trimmed artifact file generated in the script above to filter, denoise (using deblur) our data as well as filtering out chimeras and create de feature tables (frequency and representative sequences) with and without filtering the chimeras to be later filtered by the taxonomy file.
+The *FeatureTablecreation.sh* script uses the artifact file generated in the script above to filter based on a minimum number of sequences per sample and merge, denoise and filtering out chimeras using the [DADA2](https://github.com/benjjneb/dada2) package and create de feature tables (frequency and representative sequences) to be filtered by the taxonomy file.
 
 #### Inputs:
 - Population name (argument);
@@ -76,15 +78,14 @@ The *FeatureTablecreation.sh* script uses the trimmed artifact file generated in
 
 #### Outputs:
 - Feature Tables (frequency table and representative sequences) with and without chimeras (.qza);
-- Deblur stats, visualization and artifact files (.qzv and .qza);
-- Chimeras examination (Vsearch uchime-denovo) stats visualization and artifact files(.qzv and .qza). 
+- DADA2 stats, visualization and artifact files (.qzv and .qza);
 
 ### TaxoClassifyingModel.sh
 The *TaxoClassifyingModel.sh* script trains the classifying model specific of the 16S for the taxonomy using the SILVA database and creates the taxonomy of our data, the taxonomy file is later used to filter the feature tables. For better analysis the taxonomy results can be visualized by aid of a bar plot.
 
 #### Inputs:
 - Population name (argument);
-- In the Configuration file alter the: metadata path, number of cores to be used, the primers (must be the same ones used in the *demu.sh*), the name of the chimera filtered feature tables in artifact type (must be the same ones created in *FeatureTablecreation.sh*) and name of the classifier and the taxonomy file.
+- In the Configuration file alter the: metadata path, number of cores to be used, the primers (check what primers were used in the sequencing method), the feature tables in artifact type (must be the same ones created in *FeatureTablecreation.sh*), the version of the SILVA database, the reference sequence target to download, name of the classifier and the taxonomy file.
 
 #### Outputs:
 - Silva database outputs for the creation of the classifier (.qza);
@@ -94,7 +95,10 @@ The *TaxoClassifyingModel.sh* script trains the classifying model specific of th
 - Taxonomy Bar Plot.
 
 ### taxaVsSample.py
-The *taxaVsSample.py* script is a supplementary code to help in the analysis of the taxa found in our samples against a condition(column) in our data. To use this script you need the to download the csv file, from the taxonomy bar plot obtained in the previous script, in the taxonomy level of your choice, level-6 (genus) is recomended.The output generated will make a Venn diagram and a txt file detailing the specific and in common taxa against the condition(column) selected. The condition(column) must either have a total of 2 or 3 different variables to analysis. 
+The *taxaVsSample.py* script is a supplementary code to help in the analysis of the taxa found in our samples against a condition(column) in our data. To use this script you need the to download the csv file, from the taxonomy bar plot obtained in the previous script and then indicate wich rank and variable in focus (condition) do we want to analyse.The output generated will make a Venn diagram and a txt file detailing the specific and in common taxa against the condition(column) selected. 
+
+#### Constraints:
+The condition(column) must either have a total of 2 or 3 different variables to analysis. 
 
 #### Input:
 - csv file from the taxa bar plot
@@ -108,7 +112,7 @@ The *phyloDiv.sh* performs the phylogeny and alpha rarefaction analysis.
 
 #### Inputs:
 - Population name (argument);
-- In the Configuration file alter the: name of the feature tables (frequency and representative sequences) artifact files filtered by taxonomy, maximum depth value(the value is chosen by observing the taxonomy filtered frequency table number of maximum frequency. e.g: the maximum frequency=4996 then maximum depth=4230), name of the phylogeny directory and the diversity visualizations directory. 
+- In the Configuration file alter the: name of the feature tables (frequency and representative sequences) artifact files filtered by taxonomy, maximum depth value(the value is chosen by observing the taxonomy filtered frequency table number of maximum frequency. tip: check Median Frequency), name of the phylogeny directory and the diversity visualizations directory. 
 
 #### Outputs:
 - Aligned sequence (.qza);
@@ -171,7 +175,7 @@ With the feature tables created we then perform the taxonomic analysis by runnin
 
 After the download of the csv file in the taxa bar plot we run:
 
-`python3 taxaVsSample.py <input_file> <collumn_in_focous> <output_file>`
+`python3 taxaVsSample.py <input_file> <taxonomic_rank> <collumn_in_focous> <output_file>`
 
 To start the diversity analysis we must first perform the phylogeny analysis and the alpha rarefaction curve. That is done by running the command:
 
@@ -189,6 +193,8 @@ Amir, A., McDonald, D., Navas-Molina, J. A., Kopylova, E., Morton, J. T., Xu, Z.
 Bokulich, N. A., Kaehler, B. D., Rideout, J. R., Dillon, M., Bolyen, E., Knight, R., Huttley, G. A., & Caporaso, J. G. (2018). Optimizing taxonomic classification of marker-gene amplicon sequences with QIIME 2’s q2-feature-classifier plugin. Microbiome, 6(1), 90. https://doi.org/10.1186/s40168-018-0470-z
 
 Bolyen E, Rideout JR, Dillon MR, Bokulich NA, Abnet CC, Al-Ghalith GA, Alexander H, Alm EJ, Arumugam M, Asnicar F, Bai Y, Bisanz JE, Bittinger K, Brejnrod A, Brislawn CJ, Brown CT, Callahan BJ, Caraballo-Rodríguez AM, Chase J, Cope EK, Da Silva R, Diener C, Dorrestein PC, Douglas GM, Durall DM, Duvallet C, Edwardson CF, Ernst M, Estaki M, Fouquier J, Gauglitz JM, Gibbons SM, Gibson DL, Gonzalez A, Gorlick K, Guo J, Hillmann B, Holmes S, Holste H, Huttenhower C, Huttley GA, Janssen S, Jarmusch AK, Jiang L, Kaehler BD, Kang KB, Keefe CR, Keim P, Kelley ST, Knights D, Koester I, Kosciolek T, Kreps J, Langille MGI, Lee J, Ley R, Liu YX, Loftfield E, Lozupone C, Maher M, Marotz C, Martin BD, McDonald D, McIver LJ, Melnik AV, Metcalf JL, Morgan SC, Morton JT, Naimey AT, Navas-Molina JA, Nothias LF, Orchanian SB, Pearson T, Peoples SL, Petras D, Preuss ML, Pruesse E, Rasmussen LB, Rivers A, Robeson MS, Rosenthal P, Segata N, Shaffer M, Shiffer A, Sinha R, Song SJ, Spear JR, Swafford AD, Thompson LR, Torres PJ, Trinh P, Tripathi A, Turnbaugh PJ, Ul-Hasan S, van der Hooft JJJ, Vargas F, Vázquez-Baeza Y, Vogtmann E, von Hippel M, Walters W, Wan Y, Wang M, Warren J, Weber KC, Williamson CHD, Willis AD, Xu ZZ, Zaneveld JR, Zhang Y, Zhu Q, Knight R, and Caporaso JG. 2019. Reproducible, interactive, scalable and extensible microbiome data science using QIIME 2. Nature Biotechnology 37: 852–857. https://doi.org/10.1038/s41587-019-0209-9
+
+Callahan, B. J., McMurdie, P. J., Rosen, M. J., Han, A. W., Johnson, A. J. A., & Holmes, S. P. (2016). DADA2: high-resolution sample inference from Illumina amplicon data. Nature Methods, 13(7), 581. https://doi.org/10.1038/nmeth.3869
 
 Jaccard, P. (1908). Nouvelles recherches sur la distribution floral. Bull. Soc. Vard. Sci. Nat, 44, 223–270.
 
