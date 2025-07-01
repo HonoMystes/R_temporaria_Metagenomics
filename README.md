@@ -47,6 +47,7 @@ The file is divided into 7 categories:
 - Finally, the *diversity* section contains the parameters of the maximum frequency (see taxonomy filtered frequency table) and the rarefraction depth where the alpha rarefaction stabilizes (see alpha rarefaction curve file).
 
 For a more detailed explanation check the [QIIME2](https://docs.qiime2.org/2024.10/) documentation.
+
 ---
 ## Scripts
 Apart from the *taxaVsSample.py* script all other scripts depend on the [QIIME2](https://docs.qiime2.org/2024.10/) program.\
