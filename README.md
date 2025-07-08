@@ -153,12 +153,14 @@ For the python script we need to install:
 `pip install pandas`\
 `pip install matplotlib-venn`
 
-##### Note:
+#### Notes:
 If the installing of the packages is not working try:
 
 `sudo apt install pyhton3-pyyaml`\
 `sudo apt install pyhton3-pandas`\
 `sudo apt install pyhton3-matplotlib-venn`
+
+In case the conda enviroment is no longer available there is a backup in the repository `https://data.qiime2.org/distro/amplicon/qiime2-amplicon-2024.10-py310-linux-conda.yml`
 
 ## Usage
 Update the ConfigFile.yml to your desire and then the analysis by start with running the *demu.sh* script:\
