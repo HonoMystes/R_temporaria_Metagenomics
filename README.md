@@ -1,7 +1,7 @@
 # R_temporaria_Metagenomics
 
 ### Work in progress....
-
+---
 ## Table of Contents
 1. [Installing](#installing)
 2. [Configuration File](#configuration-file)
@@ -29,7 +29,7 @@
 6. [Citation](#citation)
 7. [Copyright](#copyright)
 
-
+---
 ## Installing
 
 ``` bash 
