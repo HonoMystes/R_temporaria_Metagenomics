@@ -32,6 +32,10 @@
 
 ## Installing
 
+``` bash 
+git clone https://github.com/HonoMystes/R_temporaria_Metagenomics.git
+```
+
 ---
 ## Configuration File
 The *ConfigFile.yml* will be the only file to be altered depending on the data to be analyze. 
