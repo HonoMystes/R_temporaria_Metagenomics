@@ -167,6 +167,7 @@ sudo apt install pyhton3-matplotlib-venn
 ```
 In case the conda enviroment is no longer available there is a backup in the repository `https://data.qiime2.org/distro/amplicon/qiime2-amplicon-2024.10-py310-linux-conda.yml`
 
+---
 ## Usage
 Update the ConfigFile.yml to your desire and then the analysis by start with running the *demu.sh* script:\
 As pointed out above the "PopName" argument refers to the population name in study and must also be edited in the configuration file to your preference.
@@ -241,10 +242,12 @@ Weiss, S., Xu, Z. Z., Peddada, S., Amir, A., Bittinger, K., Gonzalez, A., Lozupo
 
 Wes McKinney. (2010). Data Structures for Statistical Computing in Python . In S. van der Walt & Jarrod Millman (Eds.), Proceedings of the 9th Python in Science Conference (pp. 51–56).
 
+---
 ## Citation
 
 soon...
 
+---
 ## Copyright
 
 Copyright Daniela Deodato year 2025.
