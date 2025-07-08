@@ -143,55 +143,57 @@ The *Div2.sh* script performs the alpha and beta diversity analysis after determ
 
 This section is here in case you don't have docker and/or prefer to have the programs installed in your machine.\
 Before starting the analysis remember to download and activate de [qiime2](https://docs.qiime2.org/2024.10/install/native/) amplicon environment.
-
-`conda update conda`\
-`wget -O "https://data.qiime2.org/distro/amplicon/qiime2-amplicon-2024.10-py310-linux-conda.yml"`\
-`conda env create -n qiime2-amplicon-2024.10 --file https://data.qiime2.org/distro/amplicon/qiime2-amplicon-2024.10-py310-linux-conda.yml`\
-`conda activate qiime2-amplicon-2024.10`\
-`conda install -c bioconda fastp`\
-`snap install yq`
+``` bash
+conda update conda \
+wget -O "https://data.qiime2.org/distro/amplicon/qiime2-amplicon-2024.10-py310-linux-conda.yml" \
+conda env create -n qiime2-amplicon-2024.10 --file https://data.qiime2.org/distro/amplicon/qiime2-amplicon-2024.10-py310-linux-conda.yml \
+conda activate qiime2-amplicon-2024.10 \
+conda install -c bioconda fastp \
+snap install yq
+```
 
 For the python script we need to install:
-
-`pip install pyyaml`\
-`pip install pandas`\
-`pip install matplotlib-venn`
-
+``` bash
+pip install pyyaml \
+pip install pandas \
+pip install matplotlib-venn
+```
 #### Notes:
 If the installing of the packages is not working try:
-
-`sudo apt install pyhton3-pyyaml`\
-`sudo apt install pyhton3-pandas`\
-`sudo apt install pyhton3-matplotlib-venn`
-
+``` bash
+sudo apt install pyhton3-pyyaml \
+sudo apt install pyhton3-pandas \
+sudo apt install pyhton3-matplotlib-venn
+```
 In case the conda enviroment is no longer available there is a backup in the repository `https://data.qiime2.org/distro/amplicon/qiime2-amplicon-2024.10-py310-linux-conda.yml`
 
 ## Usage
 Update the ConfigFile.yml to your desire and then the analysis by start with running the *demu.sh* script:\
 As pointed out above the "PopName" argument refers to the population name in study and must also be edited in the configuration file to your preference.
-
-`demu.sh PopName `
+```bash
+demu.sh PopName 
+```
 
 After analyzing the output *trimmed-seqs_PopName.qzv* the denoise section of the configuration file is altered for our desired values of minimum number of sequences per sample and truncation value for the right cut of the sequences. The *FeatureTablecreation.sh* is next:
-
-`FeatureTablecreation.sh PopName`
-
+```bash
+FeatureTablecreation.sh PopName
+```
 With the feature tables created we then perform the taxonomic analysis by running the command:
-
-`TaxoClassifyingModel.sh PopName`
-
+```bash
+TaxoClassifyingModel.sh PopName
+```
 After the download of the csv file in the taxa bar plot we run:
-
-`python3 taxaVsSample.py <input_file> <taxonomic_rank> <collumn_in_focous> <output_file>`
-
+```bash
+python3 taxaVsSample.py <input_file> <taxonomic_rank> <collumn_in_focous> <output_file>
+```
 To start the diversity analysis we must first perform the phylogeny analysis and the alpha rarefaction curve. That is done by running the command:
-
-`phyloDiv.sh PopName`
-
+```bash
+phyloDiv.sh PopName
+```
 The last script to run will perform the alpha and beta diversity analysis as well as the differential abundance analysis with the command:
-
-`Div2.sh PopName`
-
+```bash
+Div2.sh PopName
+```
 ---
 ## References
 
