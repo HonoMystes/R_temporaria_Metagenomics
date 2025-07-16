@@ -165,6 +165,14 @@ sudo apt install pyhton3-pyyaml \
 sudo apt install pyhton3-pandas \
 sudo apt install pyhton3-matplotlib-venn
 ```
+If the instalation is performed in a conda eviroment do this insted: \
+`conda create -n <env_name>`
+```bash
+conda install pyyaml
+conda install pandas
+conda install matplotlib
+conda install matplotlib-venn
+```
 In case the conda enviroment is no longer available there is a backup in the repository `https://data.qiime2.org/distro/amplicon/qiime2-amplicon-2024.10-py310-linux-conda.yml`
 
 ---
@@ -187,6 +195,16 @@ After the download of the csv file in the taxa bar plot we run:
 ```bash
 python3 taxaVsSample.py <input_file> <taxonomic_rank> <collumn_in_focous> <output_file>
 ```
+#### Note:
+Make sure that the downloaded csv file taxonomic rank is the same as the one in the command. \
+Example:\
+level-1.csv -> kingdom\
+level-2.csv -> phylum\
+level-3.csv -> class\
+level-4.csv -> order\
+level-5.csv -> family\
+level-6.csv -> genus
+
 To start the diversity analysis we must first perform the phylogeny analysis and the alpha rarefaction curve. That is done by running the command:
 ```bash
 phyloDiv.sh PopName
