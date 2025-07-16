@@ -3,11 +3,13 @@
 import sys
 import yaml
 import pandas as pd
+import matplotlib 
+matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 from matplotlib_venn import venn2
 from matplotlib_venn import venn3
 
-unwanted=['RF39','CCD24','Bacteroidetes_VC2.1_Bac22',' ','0319-6G20','NS11-12_marine_group','Incertae_Sedis',
+unwanted = ['RF39','CCD24','Bacteroidetes_VC2.1_Bac22',' ','0319-6G20','NS11-12_marine_group','Incertae_Sedis',
 '67-14','UCG-010','Clade_II','A4b','SM2D12','F082','gir-aah93h0','NS11-12_marine_grou','cvE6','KF-JG30-B3',
 'env.OPS_17','37-13','Family_XI','WD2101_soil_group','JG30-KF-CM45', '0319-6G20','RF39','CCD24','']
 
@@ -120,6 +122,7 @@ if numb_var == 2:
     both=only(both)
     only_1=taxa1 - taxa2
     only_1=only(only_1)
+    print (len(only_1))
     only_2=taxa2 - taxa1
     only_2=only(only_2)
     results_1=f'Taxa present only in {dif_var[0]}: ({len(only_1)}), {only_1}'
@@ -150,7 +153,7 @@ if numb_var == 2:
     plt.figure(figsize=(6,6))
     venn2([set(only(taxa1)), set(only(taxa2))], set_labels=(dif_var[0],dif_var[1]), set_colors=('darksalmon','skyblue' ))
     plt.title(f"Taxa in population based on {focous}")
-    plt.show()
+    plt.savefig(f"Population_taxa_{rank}_ {focous}.png", dpi=300, bbox_inches='tight')
 elif numb_var == 3:
     taxa1=set(df[df[focous ] == dif_var[0]] [taxa_col].loc[:,(df[df[focous] == dif_var[0]] [taxa_col] != 0).any()].columns)
     taxa2=set(df[df[focous ] == dif_var[1]] [taxa_col].loc[:,(df[df[focous] == dif_var[1]] [taxa_col] != 0).any()].columns)
@@ -213,6 +216,6 @@ elif numb_var == 3:
     plt.figure(figsize=(6,6))
     venn3([set(only(taxa1)), set(only(taxa2)), set(only(taxa3))], set_labels=(dif_var[0],dif_var[1],dif_var[2]), set_colors=('firebrick', 'goldenrod', 'palegreen'))
     plt.title(f"Taxa in population based on {focous}")
-    plt.show()
+    plt.savefig(f"Population_taxa_{rank}_ {focous}.png", dpi=300, bbox_inches='tight')
 else:
     print("The collumns must have either 2 or 3 different variables")
