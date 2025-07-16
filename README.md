@@ -173,7 +173,7 @@ conda install pandas
 conda install matplotlib
 conda install matplotlib-venn
 ```
-In case the conda enviroment is no longer available there is a backup in the repository `https://data.qiime2.org/distro/amplicon/qiime2-amplicon-2024.10-py310-linux-conda.yml`
+In case the conda enviroment for qiime2 (ver.24.10) is no longer available there is a backup in the repository `https://data.qiime2.org/distro/amplicon/qiime2-amplicon-2024.10-py310-linux-conda.yml`
 
 ---
 ## Usage
