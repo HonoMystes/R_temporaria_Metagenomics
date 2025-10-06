@@ -54,7 +54,7 @@ For a more detailed explanation check the [QIIME2](https://docs.qiime2.org/2024.
 
 ---
 ## Scripts
-Apart from the *taxaVsSample.py* script all other scripts depend on the [QIIME2](https://docs.qiime2.org/2024.10/) program.\
+Apart from the *taxaVsSample.py* and *abundance_%.py* scripts all other scripts depend on the [QIIME2](https://docs.qiime2.org/2024.10/) program.\
 The raw used are demultiplexed paired-end fastq.gz files all in one directory.\
 The fastq.gz files must be in one of these formats: sample_name_R1.fastq.gz or sample_name_R2.fastq.gz\
 The .qza files are artifact files and .qzv are visualization files of the software QIIME2 used in this code.\
@@ -100,7 +100,7 @@ The *TaxoClassifyingModel.sh* script trains the classifying model specific of th
 - Taxonomy Bar Plot.
 
 ### taxaVsSample.py
-The *taxaVsSample.py* script is a supplementary code to help in the analysis of the taxa found in our samples against a condition(column) in our data. To use this script you need the to download the csv file, from the taxonomy bar plot obtained in the previous script and then indicate wich rank and variable in focus (condition) do we want to analyse.The output generated will make a Venn diagram and a txt file detailing the specific and in common taxa against the condition(column) selected. 
+The *taxaVsSample.py* script is a supplementary code to help in the analysis of the taxa found in the samples against a condition(column) in our data. To use this script you need the to download the csv file, from the taxonomy bar plot obtained in the previous script and then indicate wich rank and variable in focus (condition) do we want to analyse.The output generated will make a Venn diagram and a txt file detailing the specific and in common taxa against the condition(column) selected. 
 
 #### Constraints:
 The condition(column) must either have a total of 2 or 3 different variables to analysis. 
@@ -111,6 +111,18 @@ The condition(column) must either have a total of 2 or 3 different variables to 
 #### Outputs:
 - Venn diagram;
 - txt file with the taxa in each point of the venn diagram.
+
+### abundance_%.py
+The *abundance_%taxaVsSample.py* script is a supplementary code to help in the analysis of the taxa found in the samples. The output generates two CSV table with the percentages of each taxa in each treatment. At the moment the script is not yet usable to other samples. Usability in progress...
+
+#### Input:
+- CSV file from the taxa bar plot;
+- global taxa percentage CSV file name;
+- top 5 taxa percentage CSV file name.
+
+#### Outputs: 
+- CSV file with taxa percentage in each treatment;
+- CSV file of the top5 taxa percentage in each treatment.
 
 ### phyloDiv.sh
 The *phyloDiv.sh* performs the phylogeny and alpha rarefaction analysis.
