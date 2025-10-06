@@ -18,12 +18,15 @@
     - [taxaVsSample.py](#taxavssamplepy)
         - [Input](#input)
         - [Outputs](#outputs-3)
+    - [abundance_%.py](#abundance_py)
+        - [Input](#input-1)
+        - [Outputs](#outputs-4)
     - [phyloDiv.sh](#phylodivsh)
         - [Inputs](#inputs-3)
-        - [Outputs](#outputs-4)
+        - [Outputs](#outputs-5)
     - [Div2.sh](#div2sh)
         - [Inputs](#inputs-4)
-        - [Outputs](#outputs-5)
+        - [Outputs](#outputs-6)
 4. [Usage](#usage-1)
 5. [References](#references)
 6. [Citation](#citation)
@@ -216,6 +219,11 @@ level-3.csv -> class\
 level-4.csv -> order\
 level-5.csv -> family\
 level-6.csv -> genus
+
+With the csv file in the taxa bar plot it can also be run:
+```bash
+python3 abundace_%.py <input_file> <output_file_total> <output_file_top5>
+```
 
 To start the diversity analysis we must first perform the phylogeny analysis and the alpha rarefaction curve. That is done by running the command:
 ```bash
