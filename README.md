@@ -283,7 +283,7 @@ Wes McKinney. (2010). Data Structures for Statistical Computing in Python . In S
 ---
 ## Citation
 
-DanielaDeodato. (2025). HonoMystes/R_temporaria_Metagenomics: First Release (v0.1.0). Zenodo. https://doi.org/10.5281/zenodo.17280227
+Deodato, D. (2025). HonoMystes/R_temporaria_Metagenomics: First Release (v0.1.0). Zenodo. https://doi.org/10.5281/zenodo.17280227
 
 
 ---
