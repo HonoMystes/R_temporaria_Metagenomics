@@ -46,8 +46,7 @@ discriminants: #list of the collumns that are not taxa in the taxa csv obtained 
   - temp
   - box
   - P
-  - larval period
-  - w_46
+  - treatment
 diversity: 
   max_depth: 191500 #check median frequency in freq_table obtained after the filtrating with the taxonomy file
   raref_cap: 60000 #see where in the alpha rarefraction it stabilizes
