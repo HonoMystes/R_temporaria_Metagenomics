@@ -11,7 +11,7 @@ from matplotlib_venn import venn3
 
 unwanted = ['RF39','CCD24','Bacteroidetes_VC2.1_Bac22',' ','0319-6G20','NS11-12_marine_group','Incertae_Sedis',
 '67-14','UCG-010','Clade_II','A4b','SM2D12','F082','gir-aah93h0','NS11-12_marine_grou','cvE6','KF-JG30-B3',
-'env.OPS_17','37-13','Family_XI','WD2101_soil_group','JG30-KF-CM45', '0319-6G20','RF39','CCD24','']
+'env.OPS_17','37-13','Family_XI','WD2101_soil_group','JG30-KF-CM45', '0319-6G20','RF39','CCD24','Candidatus_Nomurabacteria','']
 
 def only_phylum(list):
     p=[]
