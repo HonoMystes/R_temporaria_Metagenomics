@@ -4,7 +4,6 @@ import sys
 import yaml
 import pandas as pd
 import matplotlib 
-matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 from matplotlib_venn import venn2
 from matplotlib_venn import venn3
