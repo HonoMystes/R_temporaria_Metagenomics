@@ -134,6 +134,40 @@ qiime tools export \
 mv "$INFILE_R1" "$outputDir"
 mv "$INFILE" "$outputDir"
 
+old=20251004_rana/$quality/out_
+new=seqs/
+
+#create new manifest based on the original
+sed "s!${old}!${new}!g" $manifest > manifest_bfQC.tsv
+
+#import into qiime artifact
+qiime tools import \
+  --type 'SampleData[PairedEndSequencesWithQuality]' \
+  --input-path manifest_bfQC.tsv \
+  --output-path $artifact/bfQc_$data.qza \
+  --input-format PairedEndFastqManifestPhred33V2
+
+#check to see if the import worked
+ #verify if the manifest file exists
+if [ ! -e "$artifact/bfQC_$data.qza" ];
+ then
+  help
+  echo "ERROR: file $artifact/bfQC_$data.qza  not found"
+  echo "Please check if the name is correct and the file is in the current directory"
+  exit 1
+  else
+  echo "$artifact/bfQC_$data.qza file present"
+fi
+
+#summarize the artifact to analyze the raw reads
+#Summarize for vizualization
+echo "Summarizing demultiplexing"
+qiime demux summarize \
+   --i-data $artifact/bfQC_$data.qza \
+   --o-visualization $visualizations/_bfQC$data.qzv
+
+echo "Ready to be compared!"
+
 echo "Check the "Interactive Quality Plot" tab in $visualizations/$data.qzv, additional information in $outputDir file to know what to do on the next step."
 echo ''' 
           . .
