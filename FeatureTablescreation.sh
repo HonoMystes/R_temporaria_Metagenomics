@@ -92,6 +92,7 @@ qiime dada2 denoise-paired \
   --p-n-threads $threads \
   --o-table $artifact/$freq_tbl \
   --o-representative-sequences $artifact/$seqs_rep \
+  --o-base-transition-stats $artifact/base_transition_stats.qza \
   --o-denoising-stats $artifact/dada2_stats.qza
 
 echo "pass denoising"
