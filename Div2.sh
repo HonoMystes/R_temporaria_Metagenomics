@@ -23,6 +23,7 @@ raref_cap=$(cat ConfigFile.yml | yq '.diversity.raref_cap' | sed 's/\"//g')
 artifact=$(cat ConfigFile.yml | yq '.directory_name.artifact' | sed 's/\"//g')
 phylogeny=$(cat ConfigFile.yml | yq '.directory_name.phylogeny' | sed 's/\"//g')
 outputDir_viz=$(cat ConfigFile.yml | yq '.directory_name.viz_dir_div' | sed 's/\"//g')
+taxo=$(cat ConfigFile.yml | yq '.taxonomy.taxo_data' | sed 's/\"//g')
 
 #Possible errors
 #check the number of arguments
@@ -128,42 +129,63 @@ qiime feature-table filter-features \
   --p-min-samples 4 \
   --o-filtered-table $artifact/table_abund.qza
 
-#searching for differencies in the gut microbiome between temp and diet
-qiime composition ancombc \
-  --i-table $artifact/$freq_tbl \
+qiime taxa collapse \
+  --i-table $artifact/table_abund.qza \
+  --i-taxonomy $artifact/$taxo \
+  --p-level 4 \
+  --o-collapsed-table $artifact/table_abund.qza
+
+#searching for differencies in the gut microbiome between temp, P and diet
+qiime composition ancombc2 \
+  --i-table $artifact/table_abund.qza \
   --m-metadata-file $metadata \
-  --p-formula 'diet' \
-  --p-prv-cut 0 \
-  --o-differentials $artifact/ancombc_diet.qza
+  --p-fixed-effects-formula 'temp' \
+  --o-ancombc2-output $artifact/ancombc2_temp.qza
 
-qiime composition da-barplot \
-  --i-data $artifact/ancombc_diet.qza \
-  --p-significance-threshold 0.001 \
-  --o-visualization $outputDir_viz/da_barplot_diet.qzv
-
-qiime composition ancombc \
-  --i-table $artifact/$freq_tbl \
-  --m-metadata-file $metadata \
-  --p-formula 'temp' \
-  --p-prv-cut 0 \
-  --o-differentials $artifact/ancombc_temp.qza
-
-qiime composition da-barplot \
-  --i-data $artifact/ancombc_temp.qza \
-  --p-significance-threshold 0.001 \
+qiime composition ancombc2-visualizer \
+  --i-data $artifact/ancombc2_temp.qza \
   --o-visualization $outputDir_viz/da_barplot_temp.qzv
 
-qiime composition ancombc \
-  --i-table $artifact/$freq_tbl \
+qiime composition ancombc2 \
+  --i-table $artifact/table_abund.qza \
   --m-metadata-file $metadata \
-  --p-formula 'diet + temp' \
-  --p-prv-cut 0 \
-  --o-differentials $artifact/ancombc_diet_temp.qza
+  --p-fixed-effects-formula 'temp' \
+  --p-reference-levels temp::20 \
+  --o-ancombc2-output $artifact/ancombc2_temp_reference_20.qza 
 
-qiime composition da-barplot \
-  --i-data $artifact/ancombc_diet_temp.qza \
-  --p-significance-threshold 0.001 \
-  --o-visualization $outputDir_viz/da_barplot_diet_temp.qzv
+qiime composition ancombc2-visualizer \
+  --i-data $artifact/ancombc2_temp_reference_20.qza \
+   --o-visualization $outputDir_viz/da_barplot_temp_reference_20.qzv
+
+qiime composition ancombc2 \
+  --i-table $artifact/table_abund.qza \
+  --m-metadata-file $metadata \
+  --p-fixed-effects-formula 'diet' \
+  --o-ancombc2-output $artifact/ancombc2_diet.qza
+
+qiime composition ancombc2-visualizer \
+  --i-data $artifact/ancombc2_diet.qza \
+  --o-visualization $outputDir_viz/da_barplot_diet.qzv
+
+qiime composition ancombc2 \
+  --i-table $artifact/table_abund.qza \
+  --m-metadata-file $metadata \
+  --p-fixed-effects-formula 'P' \
+  --o-ancombc2-output $artifact/ancombc2_p.qza
+
+qiime composition ancombc2-visualizer \
+  --i-data $artifact/ancombc2_p.qza \
+  --o-visualization $outputDir_viz/da_barplot_p.qzv
+
+qiime composition ancombc2 \
+  --i-table $artifact/table_abund.qza \
+  --m-metadata-file $metadata \
+  --p-fixed-effects-formula 'diet + P + temp' \
+  --o-ancombc2-output $artifact/ancombc2_temp_diet_p.qza
+
+qiime composition ancombc2-visualizer \
+  --i-data $artifact/ancombc2_temp_diet_p.qza \
+  --o-visualization $outputDir_viz/da_barplot_temp_diet_p.qzv
 
 echo "Diversity analysis finished ~~***"
 echo ''' 
