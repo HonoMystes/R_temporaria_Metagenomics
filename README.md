@@ -9,24 +9,33 @@
     - [demu.sh](#demush)
         - [Inputs](#inputs)
         - [Outputs](#outputs)
-    - [FeatureTablecreate](#featuretablecreationsh)
+    - [QC_reports.sh](#qc_reportssh)
         - [Inputs](#inputs-1)
         - [Outputs](#outputs-1)
-    - [TaxoClassifyingModel.sh](#taxoclassifyingmodelsh)
+    - [FeatureTablecreate](#featuretablecreationsh)
         - [Inputs](#inputs-2)
         - [Outputs](#outputs-2)
+    - [TaxoClassifyingModel.sh](#taxoclassifyingmodelsh)
+        - [Inputs](#inputs-3)
+        - [Outputs](#outputs-3)
     - [taxaVsSample.py](#taxavssamplepy)
         - [Input](#input)
-        - [Outputs](#outputs-3)
+        - [Outputs](#outputs-4)
     - [abundance_%.py](#abundance_py)
         - [Input](#input-1)
-        - [Outputs](#outputs-4)
-    - [phyloDiv.sh](#phylodivsh)
-        - [Inputs](#inputs-3)
         - [Outputs](#outputs-5)
-    - [Div2.sh](#div2sh)
+    - [phyloDiv.sh](#phylodivsh)
         - [Inputs](#inputs-4)
         - [Outputs](#outputs-6)
+    - [Shannon_extract.R](#shannonextractr)
+        - [Inputs](#inputs-5)
+        - [Outpus](#outputs-7)
+    - [Div2.sh](#div2sh)
+        - [Inputs](#inputs-6)
+        - [Outputs](#outputs-8)
+    - [GLMMs_automatized.R](#glmmautomatizedr)
+        - [Inputs]()#inputs-7)
+        - [Outputs](#outputs-9)
 4. [Usage](#usage-1)
 5. [References](#references)
 6. [Citation](#citation)
@@ -57,7 +66,7 @@ For a more detailed explanation check the [QIIME2](https://docs.qiime2.org/2024.
 
 ---
 ## Scripts
-Apart from the *taxaVsSample.py* and *abundance_%.py* scripts all other scripts depend on the [QIIME2](https://docs.qiime2.org/2024.10/) program.\
+Apart from the *QC_reports.sh*, *taxaVsSample.py*, *abundance_%.py*  and *GLMMs_automatized.R* scripts all other scripts depend on the [QIIME2](https://docs.qiime2.org/2024.10/) program.\
 The raw used are demultiplexed paired-end fastq.gz files all in one directory.\
 The fastq.gz files must be in one of these formats: sample_name_R1.fastq.gz or sample_name_R2.fastq.gz\
 The .qza files are artifact files and .qzv are visualization files of the software QIIME2 used in this code.\
@@ -69,13 +78,23 @@ The *demu.sh* script will perform the quality control of our samples using the [
 
 #### Inputs: 
 - Population name (argument);
-- In the Configuration file alter the: path to the samples, the name for the manifest file, the name of the directories (demultiplxed, artifact, visualizations, quality and fastp), how the paired-end reads are tagged (Eg.: "_R1") and number of threads to be used.
+- In the Configuration file alter the: path to the raw reads, the name for the manifest file, the name of the directories (demultiplxed, artifact, visualizations, quality and fastp), how the paired-end reads are tagged (Eg.: "_R1") and number of threads to be used.
 
 #### Outputs: 
 - Fastp outputs (.fastq.gz);
 - Manifest file (.tsv);
 - demultiplexed samples artifact (.qza);
 - Demultiplxed and quality controled samples' visualization (.qzv).
+
+### QC_reports.sh
+The *QC_reports.sh* scripts performs a report of the quality of the reads before and after the quality control conducted by *demu.sh* using [fastqc](https://github.com/s-andrews/FastQC) and [multiqc](https://github.com/MultiQC/MultiQC). This is the only script that is performed in a different conda environment.
+
+#### Inputs:
+- In the configuration file: Number of threads, path to raw reads and path to quality controled reads.
+
+#### Outputs:
+- Fastqc reports of the raw reads and the quality controled reads;
+- Multiqc report of the raw reads and the quality controled reads.
 
 ### FeatureTablecreation.sh
 The *FeatureTablecreation.sh* script uses the artifact file generated in the script above to filter based on a minimum number of sequences per sample and merge, denoise and filtering out chimeras using the [DADA2](https://github.com/benjjneb/dada2) package and create de feature tables (frequency and representative sequences) to be filtered by the taxonomy file.
@@ -140,6 +159,15 @@ The *phyloDiv.sh* performs the phylogeny and alpha rarefaction analysis.
 - Rooted and unrooted tree (.qza);
 - Alpha rarefaction curve plot (.qzv).
 
+### Shannon_extract.R
+This script extracts the required data to create a metadata for the shannon and observed features metrics obtained in the alpha rarefaction.
+
+#### Inputs:
+- alpha rarefaction unzipped file.
+
+#### Outputs:
+- Shannon and Observed features metadata.
+
 ### Div2.sh
 The *Div2.sh* script performs the alpha and beta diversity analysis after determining the rarefaction curve with the visualization output created above it also performs the differential analysis of the abundance in our data.
 
@@ -152,6 +180,14 @@ The *Div2.sh* script performs the alpha and beta diversity analysis after determ
 - Alpha diversity statistics (evenness, faith_pd and anova faith_pd) (.qzv);
 - Beta diversity statistics (weighted and unweighted unifraq significances) (.qzv);
 - Differential abundance analysis outputs (.qza and .qzv).
+### GLMMs_automatized.R
+This R script performs an additional alpha diversity analysis due to the codependacy of the variables. Conducts a General Linear Mixed Model analysis and uses the ANOVA function from the car package to evaluate variance components.
+
+#### Inputs
+- Metadata for the desired metrics obtained from *Div2-sh* and *Shannon_extract.R* (faith-PD; Shannon, etc...)
+
+#### Outputs
+- *p-value* and visual graphic representatios of the different metrics' values.
 
 ---
 ## Manual installation
@@ -166,6 +202,8 @@ conda activate qiime2-amplicon-2024.10 \
 conda install -c bioconda fastp \
 snap install yq
 ```
+
+The instructions on how to create the conda environment are in the [multiqc](https://github.com/MultiQC/MultiQC) github repository.
 
 For the python script we need to install:
 ``` bash
@@ -196,6 +234,11 @@ Update the ConfigFile.yml to your desire and then the analysis by start with run
 As pointed out above the "PopName" argument refers to the population name in study and must also be edited in the configuration file to your preference.
 ```bash
 demu.sh PopName 
+```
+
+Run the *QC_reports.sh* script next in a different environment
+```bash
+QC_reports.sh
 ```
 
 After analyzing the output *trimmed-seqs_PopName.qzv* the denoise section of the configuration file is altered for our desired values of minimum number of sequences per sample and truncation value for the right cut of the sequences. The *FeatureTablecreation.sh* is next:
@@ -229,10 +272,16 @@ To start the diversity analysis we must first perform the phylogeny analysis and
 ```bash
 phyloDiv.sh PopName
 ```
-The last script to run will perform the alpha and beta diversity analysis as well as the differential abundance analysis with the command:
+
+The *Shannon_extract.R* script can be run after this step in a terminal with R or RStudio.
+
+The last script to run in shell will perform the alpha and beta diversity analysis as well as the differential abundance analysis with the command:
 ```bash
 Div2.sh PopName
 ```
+
+The lastly is the R script and can be run in the a terminal with R installed or RStudio.
+
 ---
 ## References
 
@@ -289,4 +338,4 @@ Deodato, D. (2025). HonoMystes/R_temporaria_Metagenomics: First Release (v0.1.0)
 ---
 ## Copyright
 
-Copyright Daniela Deodato year 2025.
+Copyright Daniela Deodato year 2025. The additional R script was originally created by Sara Bento and Julia Filletti, it was later modified and by Daniela Deodato
