@@ -20,13 +20,14 @@ echo ""
 
 quality=$(cat ConfigFile.yml | yq '.directory_name.quality' | sed 's/\"//g')
 path_file=$(cat ConfigFile.yml | yq '.raw.data_directory' | sed 's/\"//g')
+threads=$(cat ConfigFile.yml | yq 'raw.threads' | sed 's/\"//g')
 
 # Before QC
-fastqc $path_file/*.fastq.gz -t 24
+fastqc $path_file/*.fastq.gz -t $threads
 multiqc $path_file/*.zip
 
 # After QC
-fastqc ./$quality\*.fastq.gz -t 24
+fastqc ./$quality\*.fastq.gz -t $threads
 multiqc ./$quality/*.zip
 
 echo "Ready to be compared!"
