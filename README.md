@@ -34,7 +34,7 @@
         - [Inputs](#inputs-6)
         - [Outputs](#outputs-8)
     - [GLMMs_automatized.R](#glmmautomatizedr)
-        - [Inputs]()#inputs-7)
+        - [Inputs](#inputs-7)
         - [Outputs](#outputs-9)
 4. [Usage](#usage-1)
 5. [References](#references)
