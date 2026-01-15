@@ -1,5 +1,5 @@
 # R_temporaria_Metagenomics
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17280227.svg)](https://doi.org/10.5281/zenodo.17280227)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18257526.svg)](https://doi.org/10.5281/zenodo.18257526)
 ### Work in progress....
 ---
 ## Table of Contents
@@ -338,4 +338,4 @@ Deodato, D. (2025). HonoMystes/R_temporaria_Metagenomics: First Release (v0.1.0)
 ---
 ## Copyright
 
-Copyright Daniela Deodato year 2025. The additional R script was originally created by Sara Bento and Julia Filletti, it was later modified and by Daniela Deodato
+Copyright Daniela Deodato year 2025. The additional *GLMMs_automatized.R* script was originally created by Sara Bento and Julia Filletti, it was later modified and by Daniela Deodato
