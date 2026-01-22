@@ -19,7 +19,7 @@ output_file_top5 = sys.argv[4]
 df = pd.read_csv(file, low_memory=False)
 
 # Extract phylum names from columns
-order_regex = r'p__([A-Za-z0-9_\-\[\]\(\)]+)' # match after p__
+order_regex = r'o__([A-Za-z0-9_\-\[\]\(\)]+)' # match after p__
 order_cols = []
 order_names = []
 for col in df.columns:
@@ -50,8 +50,8 @@ pivot = melted.groupby(['temp','diet','P',f'{rank}'])['abundance_%'].mean().rese
 wide_table = pivot.pivot_table(index=[f'{rank}'], columns=['temp','diet', 'P'], values='abundance_%').fillna(0)
 # Rename index
 wide_table.index.name = f'Bacteria_{rank}'
-# Flatten column multi-index into single-level with format temp + diet + P, e.g. 14A0 (insted of doing it in the document))
-wide_table.columns = wide_table.columns.map(lambda x: f"{x[0]}{x[1]}{x[2]}")
+# Flatten column multi-index into single-level with format temp + diet + P
+wide_table.columns = wide_table.columns.map(lambda x: f"{str(x[0])}{str(x[1])}{str(x[2])}")
 # Save to csv
 wide_table.to_csv(output_file)
 #############################
@@ -76,19 +76,25 @@ top5_df = top5_df[cols]
 
 #calculate the total abundance per treatment (including "Other")
 top5_df['total'] = top5_df.sum(axis=1)
-#sort by 'total' abundance descending
-top5_df = top5_df.sort_values('total', ascending=False)
-#eliminate the 'total' column after sorting for plotting
+# Optionally keep sorting by total, but we will enforce a specific plotting order below.
+#top5_df = top5_df.sort_values('total', ascending=False)
+
+# Define desired sample category order and reindex (missing categories will be added with zeros)
+desired_order = ['14A0','14A3','14M0','14M3','14P0','14P3',
+                 '20A0','20A3','20M0','20M3','20P0','20P3']
+top5_df = top5_df.reindex(desired_order).fillna(0)
+
+#eliminate the 'total' column after reindexing for plotting
 top5_df.drop('total', axis=1, inplace=True)
 
 #plotting
 top5_df.plot(kind='bar', stacked=True, figsize=(12, 6))
 plt.ylabel('Relative Abundance (%)')
 plt.xlabel('Sample Category (Temp + Diet + P)')
-plt.title('Top 5 Bacterial Phyla Relative Abundance by Sample Category')
-plt.legend(title='Bacterial Phyla', bbox_to_anchor=(1.05, 1), loc='upper left')
+plt.title('Top 5 Bacterial Order Relative Abundance by Sample Category')
+plt.legend(title='Bacterial Orders', bbox_to_anchor=(1.05, 1), loc='upper left')
 plt.tight_layout()
-plt.savefig('Top5_Bacterial_Phyla_Abundance.png', dpi=300, bbox_inches='tight')
+plt.savefig('Top5_Bacterial_Order_Abundance.png', dpi=300, bbox_inches='tight')
 plt.show()
 
 ############# TEMPERATURE ONLY #############
